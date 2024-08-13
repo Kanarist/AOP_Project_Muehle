@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 
 public class DrawBoard extends JPanel{
 
-	private final int squareSize = 470;
+	private final int squareSize = 650;
 	private static int fieldId = 0;
 	private ArrayList<PointField> fields = new ArrayList<>(24);
 	private int xAxis = 120;										//	needs to rework!
@@ -33,7 +33,7 @@ public class DrawBoard extends JPanel{
 		
 		for(int i = 0; i < 3; i++) {
 			figureRect.setStroke(new BasicStroke(3));
-			newSquareSize = squareSize - i * 150;
+			newSquareSize = squareSize - i * 200;
 			int x = (panelWidth - newSquareSize)/2;
 			int y = (panelHeight - newSquareSize)/2;
 			figureRect.setColor(Color.BLACK);
@@ -42,12 +42,12 @@ public class DrawBoard extends JPanel{
 			if(i < 1) {
 				
 				// senkrechte Linien
-				line.drawLine(panelWidth/2, y, panelWidth/2, (panelHeight-squareSize + 2 * 150)/2); 	// It Work
-				line.drawLine(panelWidth/2, (panelHeight + newSquareSize)/2, panelWidth/2, ((panelHeight + panelHeight-squareSize + 2 * 150)/2)-(panelHeight-squareSize + 2 * 150)/2+85);
+				line.drawLine(panelWidth/2, y, panelWidth/2, (panelHeight-squareSize + 2 * 200)/2); 	// top
+				line.drawLine(panelWidth/2, (panelHeight + newSquareSize)/2, panelWidth/2, ((panelHeight + panelHeight-squareSize + 2 * 200)/2)-(panelHeight-squareSize + 2 * 200)/2+125);	// bottom
 				
 				// waagerechte Linien
-				line.drawLine(x, panelHeight/2, (panelWidth-squareSize + 2 * 150)/2, panelHeight/2);	// It Work
-				line.drawLine((panelWidth + newSquareSize)/2, panelHeight/2, (panelWidth+panelWidth-squareSize + 2 * 150)/2-(panelWidth-squareSize + 2 * 150)/2+85, panelHeight/2);
+				line.drawLine(x, panelHeight/2, (panelWidth-squareSize + 2 * 200)/2, panelHeight/2);	// left
+				line.drawLine((panelWidth + newSquareSize)/2, panelHeight/2, (panelWidth+panelWidth-squareSize + 2 * 200)/2-(panelWidth-squareSize + 2 * 200)/2+125, panelHeight/2);	// reight
 
 			}
 			
