@@ -10,7 +10,7 @@ public class MuehleFrame extends JFrame{
 		setResizable(false);
 		setSize(800, 800);
 		getContentPane().setBackground(Color.lightGray);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);
 //        setUndecorated(true);
 
 		add(new DrawBoard());
