@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.JPanel;
-// ToDo: add lines under/right of smallest square
 // ToDo: add circle on square. The position must depend on square
 
 public class DrawBoard extends JPanel{
@@ -47,14 +46,14 @@ public class DrawBoard extends JPanel{
 				
 				// waagerechte Linien
 				line.drawLine(x, panelHeight/2, (panelWidth-squareSize + 2 * 200)/2, panelHeight/2);	// left
-				line.drawLine((panelWidth + newSquareSize)/2, panelHeight/2, (panelWidth+panelWidth-squareSize + 2 * 200)/2-(panelWidth-squareSize + 2 * 200)/2+125, panelHeight/2);	// reight
+				line.drawLine((panelWidth + newSquareSize)/2, panelHeight/2, (panelWidth+panelWidth-squareSize + 2 * 200)/2-(panelWidth-squareSize + 2 * 200)/2+125, panelHeight/2);		// reight
 
 			}
 			
 			
 			for(int j = 0; j < fields.size(); j++) {
 				PointField field = fields.get(i);
-				newSquareSize = squareSize - i * 150;
+				newSquareSize = squareSize - i * 200;
 				
 				fieldPoint.setStroke(new BasicStroke(8));
 				
@@ -62,8 +61,8 @@ public class DrawBoard extends JPanel{
 				fieldPoint.drawOval(field.getPosition().getX_Axis(), field.getPosition().getY_Axis(), field.getDiameter(), field.getDiameter());
 				fieldPoint.setColor(Color.WHITE);
 				fieldPoint.fillOval(field.getPosition().getX_Axis(), field.getPosition().getY_Axis(), field.getDiameter(), field.getDiameter());
-				fieldPoint.setColor(Color.BLACK);
-				fieldPoint.drawString(String.valueOf(field.getId()), field.getPosition().getX_Axis()+field.getDiameter()/2-5,field.getPosition().getY_Axis()+field.getDiameter()/2-5);
+//				fieldPoint.setColor(Color.BLACK);																																		// for test
+//				fieldPoint.drawString(String.valueOf(field.getId()), field.getPosition().getX_Axis()+field.getDiameter()/2-5,field.getPosition().getY_Axis()+field.getDiameter()/2-5);	// for test
 			}
 		}
 		
