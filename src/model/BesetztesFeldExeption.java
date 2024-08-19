@@ -1,5 +1,6 @@
 package model;
 
+@SuppressWarnings("serial")
 public class BesetztesFeldExeption extends Exception {
 	
 	public BesetztesFeldExeption() {
