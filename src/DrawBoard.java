@@ -1,46 +1,29 @@
-import java.awt.*;
+import java.awt.*; 
+import java.awt.event.*;
 import java.util.ArrayList;
+import javax.swing.JButton;
 import javax.swing.JPanel;
-// ToDo: fix circle on last square
+import javax.swing.border.Border;
 
-public class DrawBoard extends JPanel{
+// ToDo: fix design of stones
+// ToDO: fix of removeAll() function
+// ToDo: connect of logic
+
+public class DrawBoard extends JPanel implements MouseListener{
 
 	private final int squareSize = 650;
-	private ArrayList<PointField> fields = new ArrayList<>(24);
-	private int xAxis = 120;										//	needs to rework!
-	private int yAxis = 110;										//	needs to rework!
-	private Position fieldPosition = new Position(xAxis, yAxis);	//	needs to rework! 
-//	private Rect rect = new Rect(fieldPosition, rectWidthAndHeight);
+	private boolean isHovered;
 	
 	public DrawBoard() {
 		setPreferredSize(new Dimension(600, 600));
-		for(int i = 0; i < 24; i++) {
-			fields.add(new PointField(fieldPosition));
-			
-		}
+		
+		
 	}
 	
-	public void circleCreator(int squareSize, int panelWidth, int panelHeight) {
-	    fields.clear();
-
-	    int x = (panelWidth - squareSize) / 2;
-	    int y = (panelHeight - squareSize) / 2;
-
-	    // corner circles
-	    fields.add(new PointField(new Position(x, y)));  				
-	    fields.add(new PointField(new Position(x + squareSize, y)));  
-	    fields.add(new PointField(new Position(x, y + squareSize)));  
-	    fields.add(new PointField(new Position(x + squareSize, y + squareSize)));  
-
-	    // middle circles
-	    fields.add(new PointField(new Position(x + squareSize / 2, y)));  
-	    fields.add(new PointField(new Position(x + squareSize / 2, y + squareSize)));  
-	    fields.add(new PointField(new Position(x, y + squareSize / 2)));  
-	    fields.add(new PointField(new Position(x + squareSize, y + squareSize / 2)));  
-	}
-
+	
 	public void paintComponent(Graphics g) {
-		Graphics2D fieldPoint = (Graphics2D) g;
+		removeAll(); 
+		super.paintComponent(g); 
 		Graphics2D lineAndSquare = (Graphics2D) g;
 		
 		int panelWidth = getWidth();
@@ -69,21 +52,108 @@ public class DrawBoard extends JPanel{
 			}
 			
 			//  create of circles
-			for(int j = 0; j < fields.size(); j++) {
-				PointField field = fields.get(j);
-				circleCreator(newSquareSize, panelWidth-field.getDiameter(), panelHeight-field.getDiameter());
-				
-				fieldPoint.setStroke(new BasicStroke(8));
-				fieldPoint.setColor(Color.BLACK);
-				fieldPoint.drawOval(field.getPosition().getX_Axis(), field.getPosition().getY_Axis(), field.getDiameter(), field.getDiameter());
-				fieldPoint.setColor(Color.WHITE);
-				fieldPoint.fillOval(field.getPosition().getX_Axis(), field.getPosition().getY_Axis(), field.getDiameter(), field.getDiameter());
-			
-				
-			}
-			
+	        int[][] circles = {
+	            {x - 30 / 2, y - 30 / 2}, 										// top left
+	            {x + newSquareSize - 30 / 2, y - 30 / 2}, 						// top right
+	            {x - 30 / 2, y + newSquareSize - 30 / 2}, 						// bottom left
+	            {x + newSquareSize - 30 / 2, y + newSquareSize - 30 / 2}, 		// bottom right
+	            {x + newSquareSize / 2 - 30 / 2, y - 30 / 2}, 					// top middle
+	            {x + newSquareSize / 2 - 30 / 2, y + newSquareSize - 30 / 2}, 	// bottom middle
+	            {x - 30 / 2, y + newSquareSize / 2 - 30 / 2}, 					// left middle
+	            {x + newSquareSize - 30 / 2, y + newSquareSize / 2 - 30 / 2}  	// right middle
+	            
+	        };
+
+	        for (int[] circle : circles) {
+//	        	...
+	        	CircleButton button = new CircleButton();
+	            button.setEnabled(false);
+	            button.setBounds(circle[0], circle[1], button.getCircleDiameter(), button.getCircleDiameter());
+	        	button.setBorder(new RoundedBorder(Color.black, 80));
+	        	button.setBackground(Color.WHITE);
+	            button.addMouseListener(this); 
+	        	add(button);
+	        }
+	        
 		}
+
 		
 	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+		if (e.getSource() instanceof CircleButton) {
+
+			CircleButton button = (CircleButton) e.getSource();
+	        Stone stone = new Stone(false);
+	        button.add(stone);
+	        stone.setBounds(-15, -15, stone.getRadius() * 2, stone.getRadius() * 2);
+	        System.out.println("Button pressed!");
+
+	    }
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		if (e.getSource() instanceof JButton) {
+			CircleButton button = (CircleButton) e.getSource();
+	        System.out.println("Cursor is on Button!");
+	        isHovered = true;
+	        button.setBackground(button.getBackground().brighter());
+	    }
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		if (e.getSource() instanceof JButton) {
+			CircleButton button = (CircleButton) e.getSource();
+	        System.out.println("Cursor NOT is on Button!");
+	        isHovered = false;
+	        button.setBackground(button.getBackground().darker());
+	    }
+		
+	}
+	
+	class RoundedBorder implements Border {
+
+	    private int radius;
+	    private Color color;
+
+	    RoundedBorder(Color color, int radius) {
+	        this.radius = radius;
+	        this.color = color;
+	        
+	    }
+
+	    public Insets getBorderInsets(Component c) {
+	        return new Insets(this.radius+1, this.radius+1, this.radius+2, this.radius);
+	    }
+
+
+	    public boolean isBorderOpaque() {
+	        return true;
+	    }
+
+
+	    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+	        g.setColor(color);
+	    	g.drawRoundRect(x, y, width-1, height-1, radius, radius);
+	    }
+	}
+	
 	
 }

@@ -7,7 +7,7 @@ public class MuehleFrame extends JFrame{
 	public MuehleFrame() {
 		setTitle("Mühle");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		setResizable(false);
+		setResizable(true);
 		setSize(800, 800);
 		getContentPane().setBackground(Color.lightGray);
 //        setExtendedState(JFrame.MAXIMIZED_BOTH);
