@@ -7,26 +7,33 @@ import javax.swing.JPanel;
 
 public class Stone extends JPanel {
 
-	private int ovalWidth = 200;
-	private int ovalHeight = 100;
-    private boolean isWhiteStone;
-    private final int stoneRadius = 35;
 
+	private final int stoneRadius = 35;
+	private boolean isWhite;
+	
+	public Stone(boolean isWhite) {
+		this.isWhite = isWhite;
+	}
+	public int getStoneRadius() {
+		return stoneRadius;
+	}
 
-    public Stone(boolean isWhiteStone) {
-        this.isWhiteStone = isWhiteStone;
-        setOpaque(true);
-    }
+	public boolean isWhite() {
+		return isWhite;
+	}
 
-
-    @Override
+	public void setWhite(boolean isWhite) {
+		this.isWhite = isWhite;
+	}
+	
+	@Override
     protected void paintComponent(Graphics g) {
         
     	super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (isWhiteStone) {
-            g2d.setColor(Color.WHITE);
+        if (isWhite) {
+            g2d.setColor(Color.WHITE); 
         } else {
             g2d.setColor(Color.BLACK);
         }
@@ -34,8 +41,6 @@ public class Stone extends JPanel {
         g2d.fillOval(0, 0, stoneRadius * 2, stoneRadius * 2);
 
     }
-
-    public int getRadius() {
-    	return stoneRadius;
-    }
+	
+	
 }

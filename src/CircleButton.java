@@ -4,8 +4,6 @@ import javax.swing.JButton;
 public class CircleButton extends JButton{
 	
 	private final int circleDiameter = 30;
-    private Stone stone;
-
 	
 	public CircleButton() {
 
@@ -16,7 +14,6 @@ public class CircleButton extends JButton{
     }
 
 	public void addStone(Stone stone) {
-	        this.stone = stone;
 	        repaint();
 	}
 	
@@ -25,13 +22,9 @@ public class CircleButton extends JButton{
         super.paintComponent(g);
 
         if (getModel().isArmed()) {
-
             g.setColor(getBackground().darker());
-
         } else {
-
             g.setColor(getBackground().brighter());
-
         }
 
         g.fillOval(0, 0, getSize().width - 1, getSize().height - 1);
@@ -42,4 +35,5 @@ public class CircleButton extends JButton{
 		return circleDiameter;
 	}
 
+	
 }
