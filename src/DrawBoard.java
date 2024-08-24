@@ -4,8 +4,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import model.BesetztesFeldExeption;
 import model.Feld;
 import model.Spielbrett;
+import model.Spieler;
 
 // ToDo: fix design of stones
 // ToDo: connect of logic
@@ -122,6 +124,8 @@ public class DrawBoard extends JPanel implements MouseListener{
         }
 	}
 	
+	
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(maxCountOfStones < 18) {
@@ -132,9 +136,48 @@ public class DrawBoard extends JPanel implements MouseListener{
 		        button.add(stone);
 		        stone.setBounds(-15, -15, stone.getStoneRadius() * 2, stone.getStoneRadius() * 2);
 		        System.out.println("Button pressed!"); // TEST
-		        maxCountOfStones++;
+		        
+		        // Finden Sie die Position des gedrückten Buttons
+	            int row = -1;
+	            int column = -1;
+	            for (int i = 0; i < buttons.length; i++) {
+	                for (int j = 0; j < buttons[i].length; j++) {
+	                    if (buttons[i][j] == button) {
+	                        row = i;
+	                        column = j;
+	                        break;
+	                    }
+	                }
+	                if (row != -1) break;
+	            }
+	            
+	            if(row != -1 && column != -1) {
+	            	// Anzahl der Steine muss geändert werden, da jeder Spieler je 9 Steine haben
+	            	try {
+	            		Spieler currentPlayer = turn ? new Spieler("Spieler Weiß", Spieler.Farbe.WEISS, 9): new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 9);
+	            		spielbrett.setzeStein(currentPlayer, column, row);
+	            		
+	            		updateBoard();
+	    		        
+	    		        if(spielbrett.pruefeMuele(column, row)) {
+	    		        	System.out.println("Mühle gemacht");
+	    		        }
+	    		        
+	    		        
+	    		        turn = !turn;
+	    		        maxCountOfStones++;
+
+	            	}catch(BesetztesFeldExeption e1) {
+	                    System.out.println("Feld ist bereits besetzt.");
+
+	            	}
+	            	
+	            }
+		        
 		    }
-		}	
+		}else if (maxCountOfStones > 18){
+			
+		}
 	}
 
 	@Override
@@ -153,7 +196,7 @@ public class DrawBoard extends JPanel implements MouseListener{
 	public void mouseEntered(MouseEvent e) {
 		if (e.getSource() instanceof CircleButton) {
 			CircleButton button = (CircleButton) e.getSource();
-	        System.out.println("Cursor is on Button!");	// TEST
+//	        System.out.println("Cursor is on Button!");	// TEST
 	    }
 		
 	}
@@ -162,7 +205,7 @@ public class DrawBoard extends JPanel implements MouseListener{
 	public void mouseExited(MouseEvent e) {
 		if (e.getSource() instanceof CircleButton) {
 			CircleButton button = (CircleButton) e.getSource();
-	        System.out.println("Cursor NOT is on Button!");	// TEST
+//	        System.out.println("Cursor NOT is on Button!");	// TEST
 	    }
 		
 	}
