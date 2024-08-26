@@ -1,3 +1,4 @@
+package muehle.GUI;
 import java.awt.*; 
 import java.awt.event.*;
 import javax.swing.JButton;
@@ -137,7 +138,7 @@ public class DrawBoard extends JPanel implements MouseListener{
 		        stone.setBounds(-15, -15, stone.getStoneRadius() * 2, stone.getStoneRadius() * 2);
 		        System.out.println("Button pressed!"); // TEST
 		        
-		        // Finden Sie die Position des gedrückten Buttons
+		        // Finden Sie die Position des gedrï¿½ckten Buttons
 	            int row = -1;
 	            int column = -1;
 	            for (int i = 0; i < buttons.length; i++) {
@@ -152,15 +153,15 @@ public class DrawBoard extends JPanel implements MouseListener{
 	            }
 	            
 	            if(row != -1 && column != -1) {
-	            	// Anzahl der Steine muss geändert werden, da jeder Spieler je 9 Steine haben
+	            	// Anzahl der Steine muss geï¿½ndert werden, da jeder Spieler je 9 Steine haben
 	            	try {
-	            		Spieler currentPlayer = turn ? new Spieler("Spieler Weiß", Spieler.Farbe.WEISS, 9): new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 9);
+	            		Spieler currentPlayer = turn ? new Spieler("Spieler Weiï¿½", Spieler.Farbe.WEISS, 9): new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 9);
 	            		spielbrett.setzeStein(currentPlayer, column, row);
 	            		
 	            		updateBoard();
 	    		        
 	    		        if(spielbrett.pruefeMuele(column, row)) {
-	    		        	System.out.println("Mühle gemacht");
+	    		        	System.out.println("Mï¿½hle gemacht");
 	    		        }
 	    		        
 	    		        

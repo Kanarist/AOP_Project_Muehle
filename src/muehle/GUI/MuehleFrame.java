@@ -1,3 +1,4 @@
+package muehle.GUI;
 import java.awt.Color;
 
 import javax.swing.JFrame;
@@ -7,7 +8,7 @@ import model.Spielbrett;
 public class MuehleFrame extends JFrame{
 
 	public MuehleFrame() {
-		setTitle("Mühle");
+		setTitle("Mï¿½hle");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(true);
 		setSize(800, 800);
