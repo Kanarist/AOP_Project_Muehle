@@ -1,6 +1,7 @@
 import java.awt.*; 
 import java.awt.event.*;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
@@ -16,15 +17,17 @@ public class DrawBoard extends JPanel implements MouseListener{
 
 	private Spielbrett spielbrett;
 	private final int squareSize = 650;
-	private boolean turn;
-	private int maxCountOfStones = 0;
+	private boolean turn = false;
+	private int maxCountStonesOnBoard = 0;
 	private CircleButton[][]buttons = new CircleButton[8][8];
+    private CircleButton selectedButton = null; 
+
 	
 	public DrawBoard(Spielbrett spielbrett) {
 		this.spielbrett = spielbrett;
 		setPreferredSize(new Dimension(600, 600));
-		
-		
+		this.setBackground(Color.lightGray);
+		add(createText());
 	}
 	
 	// create squares and lines of board
@@ -104,6 +107,13 @@ public class DrawBoard extends JPanel implements MouseListener{
 		createFields(g);
 	}
 	
+	public JLabel createText() {
+		JLabel label = new JLabel(turn ? "Spieler Schwarz ist dran" : "Spieler Weiﬂ ist dran", JLabel.CENTER);
+		label.setForeground(Color.BLACK);
+        label.setFont(new Font("Arial", Font.BOLD, 16));
+		return label;	
+	}
+	
 	public void updateBoard() {
 		Feld[][] felder = spielbrett.getFelder();
 		
@@ -128,7 +138,8 @@ public class DrawBoard extends JPanel implements MouseListener{
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(maxCountOfStones < 18) {
+		// Anfangsphase
+		if(maxCountStonesOnBoard < 18) {
 			if (e.getSource() instanceof CircleButton) {
 				CircleButton button = (CircleButton) e.getSource();
 		        Stone stone = new Stone(turn);
@@ -165,7 +176,7 @@ public class DrawBoard extends JPanel implements MouseListener{
 	    		        
 	    		        
 	    		        turn = !turn;
-	    		        maxCountOfStones++;
+	    		        maxCountStonesOnBoard++;
 
 	            	}catch(BesetztesFeldExeption e1) {
 	                    System.out.println("Feld ist bereits besetzt.");
@@ -175,7 +186,17 @@ public class DrawBoard extends JPanel implements MouseListener{
 	            }
 		        
 		    }
-		}else if (maxCountOfStones > 18){
+		// Mitte Phase
+		}else if (maxCountStonesOnBoard > 18){
+			if(selectedButton == null) {
+				
+			}else {
+				
+				
+			}
+			
+		// Endphase	
+		}else {
 			
 		}
 	}

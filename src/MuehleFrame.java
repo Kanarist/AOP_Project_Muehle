@@ -1,5 +1,3 @@
-import java.awt.Color;
-
 import javax.swing.JFrame;
 
 import model.Spielbrett;
@@ -10,8 +8,7 @@ public class MuehleFrame extends JFrame{
 		setTitle("Mühle");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(true);
-		setSize(800, 800);
-		getContentPane().setBackground(Color.lightGray); //  need to fix
+		setSize(1000, 1000);
 //        setExtendedState(JFrame.MAXIMIZED_BOTH);
 //        setUndecorated(true);
 		
@@ -25,4 +22,6 @@ public class MuehleFrame extends JFrame{
 		
 		
 	}
+	
+	
 }
