@@ -22,7 +22,7 @@ public class SpielPhasen {
                         throw new BesetztesFeldExeption();
                     }
                 } catch (BesetztesFeldExeption e) {
-                    System.out.println("UngÃ¼ltiger Zug: Das Feld ist bereits besetzt. Versuche es erneut.");
+                    System.out.println("Ungültiger Zug: Das Feld ist bereits besetzt. Versuche es erneut.");
                     return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
                 }
             }
@@ -40,7 +40,7 @@ public class SpielPhasen {
                     if (!spielbrett.istFeldFrei(toX, toY) || spielbrett.istFeldFrei(fromX, fromY)) {
                         throw new BesetztesFeldExeption();
                     }
-                    if (!spielbrett.istBenachbart(fromX, fromY, toX, toY)) {
+                    if (player.getSteine() > 3 && !spielbrett.istBenachbart(fromX, fromY, toX, toY)) {
                         throw new NichtBenachbartExeption();
                     }
                     if (spielbrett.getFelder()[fromY][fromX].getInhalt() != Feld.farbeFeld(player)) {
@@ -50,33 +50,8 @@ public class SpielPhasen {
                     spielbrett.getFelder()[fromY][fromX].setInhalt(Feld.Inhalt.leer);
                     zugErfolgreich = true;
                 } catch (BesetztesFeldExeption | NichtBenachbartExeption | FalscheFarbeExeption e) {
-                    System.out.println("UngÃ¼ltiger Zug: " + e.getMessage() + " Versuche es erneut.");
+                    System.out.println("Ungültiger Zug: " + e.getMessage() + " Versuche es erneut.");
                     return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut ziehen
-                }
-            }
-            return true;  // Der Zug war erfolgreich
-        }
-    }
-
-    // Sprungphase
-    public static class JumpPhase implements SpielPhase {
-        @Override
-        public boolean handleAction(Spielbrett spielbrett, Spieler player, int fromX, int fromY, int toX, int toY) {
-            boolean zugErfolgreich = false;
-            while (!zugErfolgreich) {
-                try {
-                    if (!spielbrett.istFeldFrei(toX, toY) || spielbrett.istFeldFrei(fromX, fromY)) {
-                        throw new BesetztesFeldExeption();
-                    }
-                    if (spielbrett.getFelder()[fromY][fromX].getInhalt() != Feld.farbeFeld(player)) {
-                        throw new FalscheFarbeExeption();
-                    }
-                    spielbrett.getFelder()[toY][toX].setInhalt(spielbrett.getFelder()[fromY][fromX].getInhalt());
-                    spielbrett.getFelder()[fromY][fromX].setInhalt(Feld.Inhalt.leer);
-                    zugErfolgreich = true;
-                } catch (BesetztesFeldExeption | FalscheFarbeExeption e) {
-                    System.out.println("UngÃ¼ltiger Zug: " + e.getMessage() + " Versuche es erneut.");
-                    return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut springen
                 }
             }
             return true;  // Der Zug war erfolgreich

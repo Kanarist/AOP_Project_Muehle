@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Scanner;
+
 import muehle.GUI.DrawBoard;
 
 public class MuehleMain {
@@ -20,6 +22,16 @@ public class MuehleMain {
         this.drawBoard = drawBoard;
         this.gesetzteSteine = 0;
     }
+    
+    public MuehleMain() {
+        // Initialisiere das Spielbrett und die Spieler
+        this.spielbrett = Spielbrett.initialisiereBrett();
+        this.spieler1 = new Spieler("Spieler 1", Spieler.Farbe.WEISS, 0);
+        this.spieler2 = new Spieler("Spieler 2", Spieler.Farbe.SCHWARZ, 0);
+        this.isPlayerOneTurn = true;  // Spieler 1 beginnt
+        this.drawBoard = new DrawBoard(spielbrett);
+        this.gesetzteSteine = 0;
+    }
 
     public void handlePlayerAction(int fromX, int fromY, int toX, int toY) {
         if (isGameOver()) {
@@ -29,10 +41,8 @@ public class MuehleMain {
 
         if (gesetzteSteine < 18) {
             startSetPhase(toX, toY);
-        } else if (spieler1.getSteine() > 3 && spieler2.getSteine() > 3) {
-            startMovePhase(fromX, fromY, toX, toY);
         } else {
-            startJumpPhase(fromX, fromY, toX, toY);
+        	startMovePhase(fromX, fromY, toX, toY);
         }
 
         if (isGameOver()) {
@@ -48,6 +58,15 @@ public class MuehleMain {
         if (zugErfolgreich) {
             updateBoard();
             gesetzteSteine++;
+            if (spielbrett.pruefeMuele(x, y)) {
+            	Scanner scanner = new Scanner(System.in);
+                System.out.println("x: ");
+                int a = scanner.nextInt();
+                System.out.println("y: ");
+                int b = scanner.nextInt();
+            	this.removeStone(spielbrett, this.getOtherPlayer(), a, b);
+            	updateBoard();
+            }
             isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
         }
     }
@@ -59,20 +78,20 @@ public class MuehleMain {
         boolean zugErfolgreich = movePhase.handleAction(spielbrett, currentPlayer, fromX, fromY, toX, toY);
         if (zugErfolgreich) {
             updateBoard();
+            if (spielbrett.pruefeMuele(toX, toY)) {
+            	Scanner scanner = new Scanner(System.in);
+                System.out.println("x: ");
+                int a = scanner.nextInt();
+                System.out.println("y: ");
+                int b = scanner.nextInt();
+            	this.removeStone(spielbrett, this.getOtherPlayer(), a, b);
+            	updateBoard();
+            }
             isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
         }
     }
 
-    private void startJumpPhase(int fromX, int fromY, int toX, int toY) {
-        // Sprungphase
-        SpielPhasen.JumpPhase jumpPhase = new SpielPhasen.JumpPhase();
-        Spieler currentPlayer = getCurrentPlayer();
-        boolean zugErfolgreich = jumpPhase.handleAction(spielbrett, currentPlayer, fromX, fromY, toX, toY);
-        if (zugErfolgreich) {
-            updateBoard();
-            isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
-        }
-    }
+
 
     private Spieler getCurrentPlayer() {
         return isPlayerOneTurn ? spieler1 : spieler2;
@@ -83,7 +102,7 @@ public class MuehleMain {
     }
 
     private boolean isGameOver() {
-        return spieler1.getSteine() < 3 || spieler2.getSteine() < 3 || !hasValidMoves(spieler1) || !hasValidMoves(spieler2);
+        return (spieler1.getSteine() < 3 || spieler2.getSteine() < 3 || !hasValidMoves(spieler1) || !hasValidMoves(spieler2)) && this.gesetzteSteine > 6;
     }
 
     private Spieler getWinner() {
@@ -95,12 +114,12 @@ public class MuehleMain {
     }
 
     private boolean hasValidMoves(Spieler spieler) {
-        // ÃœberprÃ¼fe, ob der Spieler noch gÃ¼ltige ZÃ¼ge hat
+        // Überprüfe, ob der Spieler noch gültige Züge hat
         Feld[][] felder = spielbrett.getFelder();
         for (int i = 0; i < felder.length; i++) {
             for (int j = 0; j < felder[i].length; j++) {
                 if (felder[i][j].getInhalt() == Feld.farbeFeld(spieler)) {
-                    // ÃœberprÃ¼fe mÃ¶gliche ZÃ¼ge fÃ¼r diesen Stein
+                    // Überprüfe mögliche Züge für diesen Stein
                     if (canMove(i, j)) {
                         return true;
                     }
@@ -111,15 +130,80 @@ public class MuehleMain {
     }
 
     private boolean canMove(int x, int y) {
-        // ÃœberprÃ¼fe, ob ein Stein an Position (x, y) bewegt werden kann
+        // Überprüfe, ob ein Stein an Position (x, y) bewegt werden kann
         Feld[][] felder = spielbrett.getFelder();
-        // Beispiele fÃ¼r mÃ¶gliche Bewegungen prÃ¼fen
-        if (x > 0 && felder[y][x - 1].getInhalt() == Feld.Inhalt.leer) return true;
-        if (x < felder.length - 1 && felder[y][x + 1].getInhalt() == Feld.Inhalt.leer) return true;
-        if (y > 0 && felder[y - 1][x].getInhalt() == Feld.Inhalt.leer) return true;
-        if (y < felder.length - 1 && felder[y + 1][x].getInhalt() == Feld.Inhalt.leer) return true;
+        // Beispiele für mögliche Bewegungen prüfen
+        int z = x + 1;
+		while(z < felder.length && felder[y][z].getInhalt() == Feld.Inhalt.verboten) {
+			z++;
+		}
+		if(z < felder.length && felder[y][z].getInhalt() == Feld.Inhalt.leer) {
+			return true;
+		}
+		z = x - 1;
+		while(z >= 0 && felder[y][z].getInhalt() == Feld.Inhalt.verboten) {
+			z--;
+		}
+		if(z >= 0 && felder[y][z].getInhalt() == Feld.Inhalt.leer) {
+			return true;
+		}
+		z = y + 1;
+		while(z < felder.length && felder[z][x].getInhalt() == Feld.Inhalt.verboten) {
+			z++;
+		}
+		if(z < felder.length && felder[z][x].getInhalt() == Feld.Inhalt.leer) {
+			return true;
+		}
+		z = y - 1;
+		while(z >= 0 && felder[z][x].getInhalt() == Feld.Inhalt.verboten) {
+			z--;
+		}
+		if(z >= 0 && felder[z][x].getInhalt() == Feld.Inhalt.leer) {
+			return true;
+		}
         return false;
     }
+    
+    public Spieler getOtherPlayer() {
+    	if(this.getCurrentPlayer() == spieler1) {
+    		return spieler2;
+    	}
+    	return spieler1;
+    }
+    
+    public boolean removeStone(Spielbrett spielbrett, Spieler player, int x, int y){
+        boolean zugErfolgreich = false;
+        while (!zugErfolgreich) {
+            try {
+            	this.getCurrentPlayer().entferneStein(spielbrett, x, y, player);
+                }
+            catch (FalscheFarbeExeption e) {
+                System.out.println("Ungültiger Zug: Das Feld ist unbesetzt. Versuche es erneut.");
+                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
+            }
+            catch (BesetztesFeldExeption f) {
+                System.out.println("Ungültiger Zug: Der Stein hat die falsche Farbe. Versuche es erneut.");
+                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
+            }
+        }
+        return true;  // Der Zug war erfolgreich
+    }
+    
+    public Spielbrett getSpielbrett() {
+		return spielbrett;
+	}
+
+	public void setSpielbrett(Spielbrett spielbrett) {
+		this.spielbrett = spielbrett;
+	}
+
+	public DrawBoard getDrawBoard() {
+		return drawBoard;
+	}
+
+	public void setDrawBoard(DrawBoard drawBoard) {
+		this.drawBoard = drawBoard;
+	}
 
     public static void main(String[] args) {
         // Initialisiere hier das GUI und das Spielbrett
@@ -127,6 +211,7 @@ public class MuehleMain {
         DrawBoard drawBoard = new DrawBoard(spielbrett);
         MuehleMain game = new MuehleMain(drawBoard);
         
-        // Das Starten des Spiels und die Interaktion erfolgen Ã¼ber die GUI
+        // Das Starten des Spiels und die Interaktion erfolgen über die GUI
     }
+
 }
