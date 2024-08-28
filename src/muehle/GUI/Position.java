@@ -23,4 +23,14 @@ public class Position {
 		this.yAxis = y_Axis;
 	}
 	
+	@Override
+    public boolean equals(Object obj) {
+		return obj instanceof Position && xAxis == ((Position)obj).xAxis && yAxis == ((Position)obj).yAxis;
+    }
+	
+	@Override
+	public int hashCode() {
+		return xAxis;
+	}
+	
 }

@@ -1,13 +1,23 @@
 package muehle.GUI;
-import java.awt.*; 
-import java.awt.event.*;
-import javax.swing.JButton;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import model.BesetztesFeldExeption;
 import model.Feld;
-import model.Spielbrett;
+import model.MuehleMain;
 import model.Spieler;
 
 // ToDo: fix design of stones
@@ -15,17 +25,18 @@ import model.Spieler;
 
 public class DrawBoard extends JPanel implements MouseListener{
 
-	private Spielbrett spielbrett;
+	private final MuehleMain muehleMain;
 	private final int squareSize = 650;
 	private boolean turn;
 	private int maxCountOfStones = 0;
 	private CircleButton[][]buttons = new CircleButton[8][8];
+
+	private final Map<CircleButton, Position> button2Position = new HashMap<>();
+	private final Map<Position, CircleButton> position2button = new HashMap<>();
 	
-	public DrawBoard(Spielbrett spielbrett) {
-		this.spielbrett = spielbrett;
+	public DrawBoard(MuehleMain muehleMain) {
+		this.muehleMain = muehleMain;
 		setPreferredSize(new Dimension(600, 600));
-		
-		
 	}
 	
 	// create squares and lines of board
@@ -96,6 +107,36 @@ public class DrawBoard extends JPanel implements MouseListener{
 	        }
 	        
 		}
+		
+		button2Position.put(buttons[0][0], new Position(0, 0));
+		button2Position.put(buttons[0][1], new Position(1, 1));
+		button2Position.put(buttons[0][2], new Position(2, 2));
+		button2Position.put(buttons[1][0], new Position(7, 0));
+		button2Position.put(buttons[1][1], new Position(6, 1));
+		button2Position.put(buttons[1][2], new Position(5, 2));
+		button2Position.put(buttons[2][0], new Position(0, 7));
+		button2Position.put(buttons[2][1], new Position(1, 6));
+		button2Position.put(buttons[2][2], new Position(2, 5));
+		button2Position.put(buttons[3][0], new Position(7, 7));
+		button2Position.put(buttons[3][1], new Position(6, 6));
+		button2Position.put(buttons[3][2], new Position(5, 5));
+		button2Position.put(buttons[4][0], new Position(3, 0));
+		button2Position.put(buttons[4][1], new Position(3, 1));
+		button2Position.put(buttons[4][2], new Position(3, 2));
+		button2Position.put(buttons[5][0], new Position(4, 7));
+		button2Position.put(buttons[5][1], new Position(4, 6));
+		button2Position.put(buttons[5][2], new Position(4, 5));
+		button2Position.put(buttons[6][0], new Position(0, 3));
+		button2Position.put(buttons[6][1], new Position(1, 3));
+		button2Position.put(buttons[6][2], new Position(2, 3));
+		button2Position.put(buttons[7][0], new Position(7, 4));
+		button2Position.put(buttons[7][1], new Position(6, 4));
+		button2Position.put(buttons[7][2], new Position(5, 4));
+		
+		for(Entry<CircleButton, Position> entry : button2Position.entrySet()) {
+			position2button.put(entry.getValue(), entry.getKey());
+		}
+		
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -106,11 +147,14 @@ public class DrawBoard extends JPanel implements MouseListener{
 	}
 	
 	public void updateBoard() {
-		Feld[][] felder = spielbrett.getFelder();
+		Feld[][] felder = muehleMain.getSpielbrett().getFelder();
 		
 		for (int i = 0; i < felder.length; i++) {
             for (int j = 0; j < felder[i].length; j++) {
-                CircleButton button = buttons[i][j];
+                CircleButton button = position2button.get(new Position(i,j));
+                if(button == null) {
+                	continue;
+                }
                 Feld.Inhalt inhalt = felder[i][j].getInhalt();
                 if (inhalt == Feld.Inhalt.weiss) {
                     button.setBackground(Color.WHITE);
@@ -125,8 +169,6 @@ public class DrawBoard extends JPanel implements MouseListener{
         }
 	}
 	
-	
-	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(maxCountOfStones < 18) {
@@ -139,28 +181,18 @@ public class DrawBoard extends JPanel implements MouseListener{
 		        System.out.println("Button pressed!"); // TEST
 		        
 		        // Finden Sie die Position des gedr�ckten Buttons
-	            int row = -1;
-	            int column = -1;
-	            for (int i = 0; i < buttons.length; i++) {
-	                for (int j = 0; j < buttons[i].length; j++) {
-	                    if (buttons[i][j] == button) {
-	                        row = i;
-	                        column = j;
-	                        break;
-	                    }
-	                }
-	                if (row != -1) break;
-	            }
-	            
-	            if(row != -1 && column != -1) {
+		        final Position position = button2Position.get(button);
+		        
+	            if(position != null) {
 	            	// Anzahl der Steine muss ge�ndert werden, da jeder Spieler je 9 Steine haben
 	            	try {
 	            		Spieler currentPlayer = turn ? new Spieler("Spieler Wei�", Spieler.Farbe.WEISS, 9): new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 9);
-	            		spielbrett.setzeStein(currentPlayer, column, row);
+	            		
+	            		muehleMain.getSpielbrett().setzeStein(currentPlayer, position.getXAxis(), position.getYAxis());
 	            		
 	            		updateBoard();
 	    		        
-	    		        if(spielbrett.pruefeMuele(column, row)) {
+	    		        if(muehleMain.getSpielbrett().pruefeMuele(position.getXAxis(), position.getYAxis())) {
 	    		        	System.out.println("M�hle gemacht");
 	    		        }
 	    		        

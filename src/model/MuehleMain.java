@@ -10,18 +10,9 @@ public class MuehleMain {
     private Spieler spieler1;
     private Spieler spieler2;
     private boolean isPlayerOneTurn;  // Bestimmt, welcher Spieler am Zug ist
-    private DrawBoard drawBoard; // Das GUI-Board, das aktualisiert wird
     private int gesetzteSteine;
-
-    public MuehleMain(DrawBoard drawBoard) {
-        // Initialisiere das Spielbrett und die Spieler
-        this.spielbrett = Spielbrett.initialisiereBrett();
-        this.spieler1 = new Spieler("Spieler 1", Spieler.Farbe.WEISS, 0);
-        this.spieler2 = new Spieler("Spieler 2", Spieler.Farbe.SCHWARZ, 0);
-        this.isPlayerOneTurn = true;  // Spieler 1 beginnt
-        this.drawBoard = drawBoard;
-        this.gesetzteSteine = 0;
-    }
+    
+    private Runnable updateListener;
     
     public MuehleMain() {
         // Initialisiere das Spielbrett und die Spieler
@@ -29,11 +20,14 @@ public class MuehleMain {
         this.spieler1 = new Spieler("Spieler 1", Spieler.Farbe.WEISS, 0);
         this.spieler2 = new Spieler("Spieler 2", Spieler.Farbe.SCHWARZ, 0);
         this.isPlayerOneTurn = true;  // Spieler 1 beginnt
-        this.drawBoard = new DrawBoard(spielbrett);
         this.gesetzteSteine = 0;
     }
 
-    public void handlePlayerAction(int fromX, int fromY, int toX, int toY) {
+    public void setUpdateListener(Runnable updateListener) {
+		this.updateListener = updateListener;
+	}
+
+	public void handlePlayerAction(int fromX, int fromY, int toX, int toY) {
         if (isGameOver()) {
             System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
             return;
@@ -98,7 +92,9 @@ public class MuehleMain {
     }
 
     private void updateBoard() {
-        drawBoard.updateBoard();
+    	if(updateListener != null) {
+    		updateListener.run();
+    	}
     }
 
     private boolean isGameOver() {
@@ -197,21 +193,5 @@ public class MuehleMain {
 		this.spielbrett = spielbrett;
 	}
 
-	public DrawBoard getDrawBoard() {
-		return drawBoard;
-	}
-
-	public void setDrawBoard(DrawBoard drawBoard) {
-		this.drawBoard = drawBoard;
-	}
-
-    public static void main(String[] args) {
-        // Initialisiere hier das GUI und das Spielbrett
-        Spielbrett spielbrett = Spielbrett.initialisiereBrett();
-        DrawBoard drawBoard = new DrawBoard(spielbrett);
-        MuehleMain game = new MuehleMain(drawBoard);
-        
-        // Das Starten des Spiels und die Interaktion erfolgen über die GUI
-    }
 
 }
