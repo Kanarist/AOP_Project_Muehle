@@ -1,3 +1,4 @@
+package muehle.GUI;
 
 public abstract class Muehle {
 

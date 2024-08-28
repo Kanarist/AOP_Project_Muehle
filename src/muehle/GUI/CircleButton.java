@@ -1,16 +1,17 @@
+package muehle.GUI;
 import java.awt.Graphics;
 import javax.swing.JButton;
 
 public class CircleButton extends JButton{
 	
 	private final int circleDiameter = 30;
+	private boolean hasStone = false;
+	
 	
 	public CircleButton() {
-
         setContentAreaFilled(false);
         setFocusPainted(false);
         
-    
     }
 
 	public void addStone(Stone stone) {
@@ -30,9 +31,17 @@ public class CircleButton extends JButton{
         g.fillOval(0, 0, getSize().width - 1, getSize().height - 1);
 
     }
-
+    
 	public int getCircleDiameter() {
 		return circleDiameter;
+	}
+
+	public boolean isHasStone() {
+		return hasStone;
+	}
+
+	public void setHasStone(boolean hasStone) {
+		this.hasStone = hasStone;
 	}
 
 	
