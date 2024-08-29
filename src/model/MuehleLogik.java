@@ -101,7 +101,7 @@ public class MuehleLogik {
 
 
 
-    private Spieler getCurrentPlayer() {
+    public Spieler getCurrentPlayer() {
         return isPlayerOneTurn ? spieler1 : spieler2;
     }
 
@@ -112,7 +112,11 @@ public class MuehleLogik {
     }
 
     private boolean isGameOver() {
-        return (spieler1.getSteine() < 3 || spieler2.getSteine() < 3 || !hasValidMoves(spieler1) || !hasValidMoves(spieler2)) && this.gesetzteSteine > 6;
+    	return !isSetPhase() 
+    		&& (spieler1.getSteine() < 3 
+				|| spieler2.getSteine() < 3 
+				|| !hasValidMoves(spieler1)
+				|| !hasValidMoves(spieler2));
     }
 
     private Spieler getWinner() {
@@ -125,7 +129,11 @@ public class MuehleLogik {
 
     private boolean hasValidMoves(Spieler spieler) {
         // Überprüfe, ob der Spieler noch gültige Züge hat
-        Feld[][] felder = spielbrett.getFelder();
+    	if(spieler.getSteine() == 3 ) {
+    		// mit 3 Steinen kann er springen
+    		return true;
+    	}
+    	Feld[][] felder = spielbrett.getFelder();
         for (int i = 0; i < felder.length; i++) {
             for (int j = 0; j < felder[i].length; j++) {
                 if (felder[i][j].getInhalt() == Feld.farbeFeld(spieler)) {

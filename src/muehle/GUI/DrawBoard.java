@@ -20,6 +20,7 @@ import javax.swing.border.Border;
 import model.Feld;
 import model.MuehleLogik;
 import model.Spielbrett;
+import model.Spieler.Farbe;
 
 // ToDo: fix design of stones
 // ToDo: connect of logic
@@ -28,7 +29,6 @@ public class DrawBoard extends JPanel implements MouseListener {
 
 	private final MuehleLogik muehleMain;
 	private final int squareSize = 650;
-	private boolean hasWhiteTurn = false;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
 	private CircleButton selectedButton = null;
 	private JLabel playerLabel;
@@ -238,7 +238,11 @@ public class DrawBoard extends JPanel implements MouseListener {
 	}
 
 	public JLabel createText() {
-		JLabel label = new JLabel(hasWhiteTurn ? "Spieler Schwarz ist dran" : "Spieler Weiﬂ ist dran", JLabel.CENTER);
+		JLabel label = new JLabel(
+			muehleMain.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ
+				? "Spieler Schwarz ist dran"
+				: "Spieler Weiﬂ ist dran",
+			JLabel.CENTER);
 		label.setForeground(Color.BLACK);
 		label.setFont(new Font("Arial", Font.BOLD, 16));
 		return label;
@@ -295,12 +299,10 @@ public class DrawBoard extends JPanel implements MouseListener {
 		if (muehleMain.isSetPhase()) {
 			muehleMain.handlePlayerAction(-1, -1, x, y);
 
-			// Phase 2
+		// Phase 2
 		} else {
 			if (selectedButton == null) {
-				if (spielbrett.getFelder()[y][x]
-						.getInhalt() == (hasWhiteTurn ? Feld.Inhalt.weiss : Feld.Inhalt.schwarz)) {
-					// select the stone
+				if(spielbrett.getFelder()[y][x].gehoertSpieler(muehleMain.getCurrentPlayer())) {
 					selectedButton = button;
 					System.out.println("Stein ausgew‰hlt bei Position: (" + x + ", " + y + ")");
 				} else {
@@ -308,13 +310,14 @@ public class DrawBoard extends JPanel implements MouseListener {
 				}
 			} else {
 				if (selectedButton == button) {
-					selectedButton = null;
 					System.out.println("Stein-Auswahl aufgehoben.");
+					selectedButton = null;
 				} else {
 					// neuer Button wurde geklickt
 					try {
 						Position selectedPosition = getPosition4Button(selectedButton);
 						muehleMain.handlePlayerAction(selectedPosition.getXAxis(), selectedPosition.getYAxis(), x, y);
+						selectedButton = null;
 					} catch (Exception ex) {
 						System.out.println("Fehler beim Bewegen des Steins: " + ex.getMessage());
 					}

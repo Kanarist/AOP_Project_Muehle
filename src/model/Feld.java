@@ -17,6 +17,10 @@ public class Feld {
 		this.inhalt = inhalt;
 	}
 	
+	public boolean gehoertSpieler(Spieler spieler) {
+		return farbeFeld(spieler) == inhalt;
+	}
+	
 	public static Inhalt farbeFeld(Spieler spieler) {
 		if (spieler.getFarbe() == Spieler.Farbe.WEISS) {
 			return Feld.Inhalt.weiss;
