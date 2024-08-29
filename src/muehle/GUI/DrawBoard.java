@@ -1,14 +1,23 @@
 package muehle.GUI;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.JButton;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import model.BesetztesFeldExeption;
 import model.Feld;
+import model.MuehleLogik;
 import model.Spielbrett;
 import model.Spieler;
 
@@ -17,7 +26,7 @@ import model.Spieler;
 
 public class DrawBoard extends JPanel implements MouseListener {
 
-	private Spielbrett spielbrett;
+	private final MuehleLogik muehleMain;
 	private final int squareSize = 650;
 	private boolean hasWhiteTurn = false;
 	private int maxCountStonesOnBoard = 0;
@@ -26,11 +35,9 @@ public class DrawBoard extends JPanel implements MouseListener {
 	private int selectedX = -1;
 	private int selectedY = -1;
 	private JLabel playerLabel;
-	Spieler whitePlayer = new Spieler("Spieler 1", Spieler.Farbe.WEISS, 9);
-	Spieler blackPlayer = new Spieler("Spieler", Spieler.Farbe.SCHWARZ, 9);
 
-	public DrawBoard() {
-		this.spielbrett = Spielbrett.initialisiereBrett();
+	public DrawBoard(MuehleLogik muehleMain) {
+		this.muehleMain = muehleMain;
 		setPreferredSize(new Dimension(600, 600));
 		this.setBackground(Color.lightGray);
 		playerLabel = createText();
@@ -146,7 +153,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 	 
 	    for (int i = 0; i < 8; i++) {
 	        for (int j = 0; j < 8; j++) {
-	            if (spielbrett.getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
+	            if (muehleMain.getSpielbrett().getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
 	                CircleButton button = new CircleButton();
 	                button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
 	                button.setEnabled(false);
@@ -174,7 +181,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 	}
 
 	public void updateBoard() {
-		Feld[][] felder = spielbrett.getFelder();
+		Feld[][] felder = muehleMain.getSpielbrett().getFelder();
 
 		for (int i = 0; i < felder.length; i++) {
 			for (int j = 0; j < felder[i].length; j++) {
@@ -200,6 +207,9 @@ public class DrawBoard extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+
+		final Spielbrett spielbrett = muehleMain.getSpielbrett();
+
 		// Phase 1
 		if (e.getSource() instanceof CircleButton && maxCountStonesOnBoard < 18) {
 			CircleButton button = (CircleButton) e.getSource();
@@ -219,10 +229,11 @@ public class DrawBoard extends JPanel implements MouseListener {
 			}
 
 			// verarbeitet den Klick
+			
 			if (spielbrett.istFeldFrei(x, y) && x != -1 && y != -1) {
 				System.out.println("Button geklickt bei Position: (" + x + ", " + y + ")"); // TEst
 
-				Spieler currentPlayer = hasWhiteTurn ? whitePlayer : blackPlayer;
+				Spieler currentPlayer = hasWhiteTurn ? muehleMain.getSpieler1() : muehleMain.getSpieler2();
 				try {
 					spielbrett.setzeStein(currentPlayer, x, y);
 				} catch (BesetztesFeldExeption e1) {
@@ -269,7 +280,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 					selectedY = y;
 					System.out.println("Stein ausgewählt bei Position: (" + x + ", " + y + ")");
 				} else {
-					System.out.println("Kein gültiger Stein zum Auswählen!");
+					System.out.println("Kein gültiger Stein zum Auswählen!(" + x + ", " + y + ")");
 				}
 			} else {
 				if (selectedButton == button) {
@@ -291,7 +302,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 
 							hasWhiteTurn = !hasWhiteTurn;
 						} else {
-							System.out.println("Ziel-Feld ist nicht frei!");
+							System.out.println("Ziel-Feld ist nicht frei! (" + x + ", " + y + ")");
 						}
 					} catch (Exception ex) {
 						System.out.println("Fehler beim Bewegen des Steins: " + ex.getMessage());

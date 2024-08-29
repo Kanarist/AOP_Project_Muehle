@@ -1,11 +1,11 @@
 package muehle.GUI;
-import java.awt.Color;
-
 import javax.swing.JFrame;
 
-import model.Spielbrett;
+import model.MuehleLogik;
 
 public class MuehleFrame extends JFrame{
+	
+	private final MuehleLogik muehleMain = new MuehleLogik();
 
 	public MuehleFrame() {
 		setTitle("Mühle");
@@ -16,7 +16,9 @@ public class MuehleFrame extends JFrame{
         setUndecorated(true);
 		
 		
-        DrawBoard drawBoard = new DrawBoard();
+        final DrawBoard drawBoard = new DrawBoard(muehleMain);
+		muehleMain.setUpdateListener(() -> drawBoard.updateBoard());
+		
 		add(drawBoard);
 
 		setVisible(true);

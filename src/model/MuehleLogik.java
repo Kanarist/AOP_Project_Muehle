@@ -1,26 +1,40 @@
 package model;
 
-import muehle.GUI.DrawBoard;
+public class MuehleLogik {
 
-public class MuehleMain {
-
-    private Spielbrett spielbrett;
-    private Spieler spieler1;
-    private Spieler spieler2;
+    private final Spielbrett spielbrett;
+    private final Spieler spieler1;
+	private final Spieler spieler2;
     private boolean isPlayerOneTurn;  // Bestimmt, welcher Spieler am Zug ist
-    private DrawBoard drawBoard; // Das GUI-Board, das aktualisiert wird
     private int gesetzteSteine;
+    
+    private Runnable updateListener;
 
-    public MuehleMain(DrawBoard drawBoard) {
+    public MuehleLogik() {
         // Initialisiere das Spielbrett und die Spieler
         this.spielbrett = Spielbrett.initialisiereBrett();
         this.spieler1 = new Spieler("Spieler 1", Spieler.Farbe.WEISS, 0);
         this.spieler2 = new Spieler("Spieler 2", Spieler.Farbe.SCHWARZ, 0);
         this.isPlayerOneTurn = true;  // Spieler 1 beginnt
-        this.drawBoard = drawBoard;
         this.gesetzteSteine = 0;
     }
 
+    public Spielbrett getSpielbrett() {
+		return spielbrett;
+	}
+
+    public Spieler getSpieler1() {
+		return spieler1;
+	}
+
+	public Spieler getSpieler2() {
+		return spieler2;
+	}
+
+    public void setUpdateListener(Runnable updateListener) {
+		this.updateListener = updateListener;
+	}
+    
     public void handlePlayerAction(int fromX, int fromY, int toX, int toY) {
         if (isGameOver()) {
             System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
@@ -79,7 +93,9 @@ public class MuehleMain {
     }
 
     private void updateBoard() {
-        drawBoard.updateBoard();
+    	if(updateListener != null) {
+    		updateListener.run();
+    	}
     }
 
     private boolean isGameOver() {
@@ -121,12 +137,4 @@ public class MuehleMain {
         return false;
     }
 
-    public static void main(String[] args) {
-        // Initialisiere hier das GUI und das Spielbrett
-        Spielbrett spielbrett = Spielbrett.initialisiereBrett();
-        DrawBoard drawBoard = new DrawBoard();
-        MuehleMain game = new MuehleMain(drawBoard);
-        
-        // Das Starten des Spiels und die Interaktion erfolgen über die GUI
-    }
 }
