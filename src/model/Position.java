@@ -1,4 +1,4 @@
-package muehle.GUI;
+package model;
 
 public class Position {
 	private int xAxis;

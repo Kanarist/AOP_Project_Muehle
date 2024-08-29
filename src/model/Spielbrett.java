@@ -1,7 +1,6 @@
 package model;
 
 import model.Feld.Inhalt;
-import muehle.GUI.Position;
 
 public class Spielbrett {
 

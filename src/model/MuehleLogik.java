@@ -1,7 +1,5 @@
 package model;
 
-import muehle.GUI.Position;
-
 public class MuehleLogik {
 	
     private Spielbrett spielbrett;
@@ -29,6 +27,10 @@ public class MuehleLogik {
 		spielbrett = Spielbrett.initialisiereBrett();
 		spieler1.setSteine(0);
 		spieler2.setSteine(0);
+		gesetzteSteine = 0;
+		isPlayerOneTurn = true;
+		removeStoneStatus = false;
+		gameOver = false;
 		updateBoard();
 	}
 	
@@ -68,10 +70,17 @@ public class MuehleLogik {
         } else {
         	Position position = spielbrett.getSelPostion();
         	if(position != null) {
-            	zugErfolgreich = startMovePhase(position.getXAxis(), position.getYAxis(), x, y);
-            	if(zugErfolgreich) {
-            		spielbrett.setSelPostion(null);
-            	}
+        		
+        		// Wenn gleiche Position, dann Selektion wieder aufheben
+        		if(position.getXAxis() == x && position.getYAxis() == y) {
+        			spielbrett.setSelPostion(null);
+        		} else {
+                	zugErfolgreich = startMovePhase(position.getXAxis(), position.getYAxis(), x, y);
+                	if(zugErfolgreich) {
+                		spielbrett.setSelPostion(null);
+                	}
+        		}
+        			
         	} else {
 				if(spielbrett.getFelder()[y][x].gehoertSpieler(getCurrentPlayer())) {
 	        		spielbrett.setSelPostion(new Position(x,y));

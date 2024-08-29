@@ -18,6 +18,7 @@ import javax.swing.border.Border;
 
 import model.Feld;
 import model.MuehleLogik;
+import model.Position;
 import model.Spieler.Farbe;
 
 // ToDo: fix design of stones
