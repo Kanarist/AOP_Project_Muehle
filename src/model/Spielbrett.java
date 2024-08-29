@@ -70,7 +70,7 @@ public class Spielbrett {
 			}
 			z = x1 - 1;
 			while(z >= 0 && this.felder[y1][z].getInhalt() == Feld.Inhalt.verboten) {
-				z++;
+				z--;
 			}
 			if(z >= 0 && z == x2) {
 				return true;
@@ -86,7 +86,7 @@ public class Spielbrett {
 			}
 			z = y1 - 1;
 			while(z >= 0 && this.felder[z][x1].getInhalt() == Feld.Inhalt.verboten) {
-				z++;
+				z--;
 			}
 			if(z >= 0 && z == y2) {
 				return true;
@@ -136,10 +136,7 @@ public class Spielbrett {
 
 	}
 	
-	public boolean pruefeMuele(int x, int y) throws BesetztesFeldExeption {
-		if (this.istFeldFrei(x,y)) {
-			throw new BesetztesFeldExeption();
-		}
+	public boolean pruefeMuele(int x, int y) {
 		int w = 0;
 		int s = 0;
 		for (int i = 0; i < felder.length; i++) {
