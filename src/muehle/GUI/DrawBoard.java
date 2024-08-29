@@ -241,9 +241,6 @@ public class DrawBoard extends JPanel implements MouseListener  {
 			}
 			fieldsCreated = true;
 		}
-		
-		playerLabel.setHorizontalAlignment(JLabel.RIGHT);
-
 	}
 
 	 public void paintComponent(Graphics g) {
@@ -253,15 +250,22 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	}
 
 	private void updatePlayerLabel() {
-		String text = String.format("Spieler %s ist dran: ",
-			muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ ? "Schwarz" : "Weiß");
 		
-		if(muehleLogik.isRemoveStoneStatus()) {
-			text += "!!! M Ü H L E !!! Nimm einen Stein vom Gegner!";
-		} else if(muehleLogik.isSetPhase()) {
-			text += "Setze einen Stein!";
+		String text;
+		
+		if(muehleLogik.isGameOver()) {
+			text = "Spiel vorbei! " + muehleLogik.getWinner().getName() + " hat gewonnen!";
 		} else {
-			text += "Ziehe einen Stein!";
+			text = String.format("Spieler %s ist dran: ",
+					muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ ? "Schwarz" : "Weiß");
+				
+			if(muehleLogik.isRemoveStoneStatus()) {
+				text += "!!! M Ü H L E !!! Nimm einen Stein vom Gegner!";
+			} else if(muehleLogik.isSetPhase()) {
+				text += "Setze einen Stein!";
+			} else {
+				text += "Ziehe einen Stein!";
+			}
 		}
 		
 		playerLabel.setText(text);
@@ -316,7 +320,7 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		try {
 			muehleLogik.handlePlayAction(x, y);
 		} catch(Exception ex) {
-			System.out.println("Fehler bei Ausführen einer Spielaktion " + ex.getMessage());
+			System.out.println("Fehler beim Ausführen einer Spielaktion " + ex.getMessage());
 		}
 	}
 

@@ -13,12 +13,14 @@ public class MuehleLogik {
     private boolean removeStoneStatus;
     
 	private Runnable updateListener;
+	
+	private boolean gameOver;
     
-    public MuehleLogik() {
+	public MuehleLogik() {
         // Initialisiere das Spielbrett und die Spieler
         this.spielbrett = Spielbrett.initialisiereBrett();
-        this.spieler1 = new Spieler("Spieler 1", Spieler.Farbe.WEISS, 0);
-        this.spieler2 = new Spieler("Spieler 2", Spieler.Farbe.SCHWARZ, 0);
+        this.spieler1 = new Spieler("Spieler Weiﬂ", Spieler.Farbe.WEISS, 0);
+        this.spieler2 = new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 0);
         this.isPlayerOneTurn = true;  // Spieler 1 beginnt
         this.gesetzteSteine = 0;
     }
@@ -40,9 +42,12 @@ public class MuehleLogik {
 		return selPosition != null && selPosition.getXAxis() == x && selPosition.getYAxis() == y;
 	}
     
+    public boolean isGameOver() {
+		return gameOver;
+	}
+
 	public void handlePlayAction(int x, int y) {
-        if (isGameOver()) {
-            System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
+        if (gameOver) {
             return;
         }
         
@@ -71,7 +76,8 @@ public class MuehleLogik {
         }
 
         if (zugErfolgreich) {
-            if (isGameOver()) {
+        	updateGameOver();
+            if (gameOver) {
                 System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
             } else {
                 removeStoneStatus = spielbrett.pruefeMuehle(x, y);
@@ -136,15 +142,15 @@ public class MuehleLogik {
     	}
     }
 
-    private boolean isGameOver() {
-    	return !isSetPhase() 
+    private void updateGameOver() {
+    	gameOver =  !isSetPhase() 
     		&& (spieler1.getSteine() < 3 
 				|| spieler2.getSteine() < 3 
 				|| !hasValidMoves(spieler1)
 				|| !hasValidMoves(spieler2));
     }
 
-    private Spieler getWinner() {
+    public Spieler getWinner() {
         if (spieler1.getSteine() < 3 || !hasValidMoves(spieler1)) {
             return spieler2;
         } else {
