@@ -214,23 +214,16 @@ public class DrawBoard extends JPanel implements MouseListener {
 		if (e.getSource() instanceof CircleButton && maxCountStonesOnBoard < 18) {
 			CircleButton button = (CircleButton) e.getSource();
 
-			int x = -1;
-			int y = -1;
-			for (int i = 0; i < buttons.length; i++) {
-				for (int j = 0; j < buttons[i].length; j++) {
-					if (buttons[i][j] == button) {
-						x = j;
-						y = i;
-						break;
-					}
-				}
-				if (x != -1)
-					break;
+			Position position = getPosition4Button(button);
+			if(position == null) {
+				return;
 			}
+			int x = position.getXAxis();
+			int y = position.getYAxis();
 
 			// verarbeitet den Klick
 			
-			if (spielbrett.istFeldFrei(x, y) && x != -1 && y != -1) {
+			if (spielbrett.istFeldFrei(x, y)) {
 				System.out.println("Button geklickt bei Position: (" + x + ", " + y + ")"); // TEst
 
 				Spieler currentPlayer = hasWhiteTurn ? muehleMain.getSpieler1() : muehleMain.getSpieler2();
@@ -257,19 +250,12 @@ public class DrawBoard extends JPanel implements MouseListener {
 		} else {
 			CircleButton button = (CircleButton) e.getSource();
 
-			int x = -1;
-			int y = -1;
-			for (int i = 0; i < buttons.length; i++) {
-				for (int j = 0; j < buttons[i].length; j++) {
-					if (buttons[i][j] == button) {
-						x = j;
-						y = i;
-						break;
-					}
-				}
-				if (x != -1)
-					break;
+			Position position = getPosition4Button(button);
+			if(position == null) {
+				return;
 			}
+			int x = position.getXAxis();
+			int y = position.getYAxis();
 
 			if (selectedButton == null) {
 				if (spielbrett.getFelder()[y][x]
@@ -311,6 +297,17 @@ public class DrawBoard extends JPanel implements MouseListener {
 				}
 			}
 		}
+	}
+	
+	private Position getPosition4Button(CircleButton button) {
+		for (int y = 0; y < buttons.length; y++) {
+			for (int x = 0; x < buttons[y].length; x++) {
+				if (buttons[y][x] == button) {
+					return new Position(x, y);
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
