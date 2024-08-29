@@ -18,7 +18,6 @@ import javax.swing.border.Border;
 
 import model.Feld;
 import model.MuehleLogik;
-import model.Spielbrett;
 import model.Spieler.Farbe;
 
 // ToDo: fix design of stones
@@ -29,7 +28,6 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	private final MuehleLogik muehleLogik;
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
-	private CircleButton selectedButton = null;
 	private JLabel playerLabel;
 	private boolean fieldsCreated;
 
@@ -215,7 +213,7 @@ public class DrawBoard extends JPanel implements MouseListener  {
 
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				if (muehleLogik.getSpielbrett().getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
+				if (muehleLogik.getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
 					CircleButton button = new CircleButton();
 					button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
 					button.setEnabled(false);
@@ -248,21 +246,21 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	}
 
 	public void updateBoard() {
-		final Feld[][] felder = muehleLogik.getSpielbrett().getFelder();
+		final Feld[][] felder = muehleLogik.getFelder();
 		EventQueue.invokeLater(() -> {
-			for (int i = 0; i < felder.length; i++) {
-				for (int j = 0; j < felder[i].length; j++) {
-					CircleButton button = buttons[i][j];
+			for (int y = 0; y < felder.length; y++) {
+				for (int x = 0; x < felder[y].length; x++) {
+					CircleButton button = buttons[y][x];
 					if (button != null) {
 						button.removeAll();
-						Feld.Inhalt inhalt = felder[i][j].getInhalt();
+						Feld.Inhalt inhalt = felder[y][x].getInhalt();
 						if (inhalt == Feld.Inhalt.weiss) {
 							button.add(new Stone(true));
-							button.setBackground(Color.WHITE);
+							button.setBackground(muehleLogik.isSelPosition(x, y) ? Color.YELLOW : Color.WHITE);
 							button.setEnabled(true);
 						} else if (inhalt == Feld.Inhalt.schwarz) {
 							button.add(new Stone(false));
-							button.setBackground(Color.BLACK);
+							button.setBackground(muehleLogik.isSelPosition(x, y) ? Color.RED : Color.BLACK);
 							button.setEnabled(true);
 						} else if (inhalt == Feld.Inhalt.verboten) {
 							button.setEnabled(false);
@@ -291,41 +289,11 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		}
 		int x = position.getXAxis();
 		int y = position.getYAxis();
-
-		final Spielbrett spielbrett = muehleLogik.getSpielbrett();
 		
-		if(muehleLogik.isRemoveStoneStatus()) {
-			muehleLogik.handleRemoveStone(x, y);
-		}
-
-		// Phase 1
-		else if (muehleLogik.isSetPhase()) {
-			muehleLogik.handlePlayAction(-1, -1, x, y);
-
-		// Phase 2
-		} else {
-			if (selectedButton == null) {
-				if(spielbrett.getFelder()[y][x].gehoertSpieler(muehleLogik.getCurrentPlayer())) {
-					selectedButton = button;
-					System.out.println("Stein ausgewählt bei Position: (" + x + ", " + y + ")");
-				} else {
-					System.out.println("Kein gültiger Stein zum Auswählen!(" + x + ", " + y + ")");
-				}
-			} else {
-				if (selectedButton == button) {
-					System.out.println("Stein-Auswahl aufgehoben.");
-					selectedButton = null;
-				} else {
-					// neuer Button wurde geklickt
-					try {
-						Position selectedPosition = getPosition4Button(selectedButton);
-						muehleLogik.handlePlayAction(selectedPosition.getXAxis(), selectedPosition.getYAxis(), x, y);
-						selectedButton = null;
-					} catch (Exception ex) {
-						System.out.println("Fehler beim Bewegen des Steins: " + ex.getMessage());
-					}
-				}
-			}
+		try {
+			muehleLogik.handlePlayAction(x, y);
+		} catch(Exception ex) {
+			System.out.println("Fehler bei Ausführen einer Spielaktion " + ex.getMessage());
 		}
 	}
 

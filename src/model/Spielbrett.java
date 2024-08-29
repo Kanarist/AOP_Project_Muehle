@@ -1,6 +1,11 @@
 package model;
 
+import muehle.GUI.Position;
+
 public class Spielbrett {
+
+	private Position selPostion;
+	
 	private Feld felder[][];
 	
 	public Feld[][] getFelder() {
@@ -14,6 +19,14 @@ public class Spielbrett {
 	private Spielbrett(Feld[][] felder) {
 		super();
 		this.felder = felder;
+	}
+
+	public Position getSelPostion() {
+		return selPostion;
+	}
+
+	public void setSelPostion(Position selPostion) {
+		this.selPostion = selPostion;
 	}
 
 	public static Spielbrett initialisiereBrett() {
