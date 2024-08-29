@@ -34,8 +34,8 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		
 	private boolean fieldsCreated;
 
-	public DrawBoard(MuehleLogik muehleMain) {
-		this.muehleLogik = muehleMain;
+	public DrawBoard(MuehleLogik muehleLogik) {
+		this.muehleLogik = muehleLogik;
 		setPreferredSize(new Dimension(600, 600));
 		this.setBackground(Color.lightGray);
 		
@@ -234,7 +234,8 @@ public class DrawBoard extends JPanel implements MouseListener  {
 						CircleButton button = new CircleButton();
 						button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
 						button.setEnabled(false);
-						button.setBackground(Color.gray); // Test color
+						button.setBackground(Color.gray); 
+					    button.setBorderPainted(false);
 						button.addMouseListener(this);
 						buttons[i][j] = button;
 						add(button);
@@ -283,11 +284,9 @@ public class DrawBoard extends JPanel implements MouseListener  {
 						button.removeAll();
 						Feld.Inhalt inhalt = felder[y][x].getInhalt();
 						if (inhalt == Feld.Inhalt.weiss) {
-							button.add(new Stone(true));
 							button.setBackground(muehleLogik.isSelPosition(x, y) ? Color.YELLOW : Color.WHITE);
 							button.setEnabled(true);
 						} else if (inhalt == Feld.Inhalt.schwarz) {
-							button.add(new Stone(false));
 							button.setBackground(muehleLogik.isSelPosition(x, y) ? Color.RED : Color.BLACK);
 							button.setEnabled(true);
 						} else if (inhalt == Feld.Inhalt.verboten) {

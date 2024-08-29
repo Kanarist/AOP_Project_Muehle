@@ -4,7 +4,7 @@ import muehle.GUI.Position;
 
 public class MuehleLogik {
 	
-    private final Spielbrett spielbrett;
+    private Spielbrett spielbrett;
     private final Spieler spieler1;
 	private final Spieler spieler2;
     private boolean isPlayerOneTurn;  // Bestimmt, welcher Spieler am Zug ist
@@ -25,6 +25,13 @@ public class MuehleLogik {
         this.gesetzteSteine = 0;
     }
 
+	public void neuesSpiel() {
+		spielbrett = Spielbrett.initialisiereBrett();
+		spieler1.setSteine(0);
+		spieler2.setSteine(0);
+		updateBoard();
+	}
+	
     public void setUpdateListener(Runnable updateListener) {
 		this.updateListener = updateListener;
 	}

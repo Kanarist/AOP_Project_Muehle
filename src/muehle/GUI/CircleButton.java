@@ -6,8 +6,7 @@ public class CircleButton extends JButton{
 	
 	private static final long serialVersionUID = 2303935598718482558L;
 	
-	private final int circleDiameter = 30;
-	private boolean hasStone = false;
+	private final int circleDiameter = 50;
 	
 	
 	public CircleButton() {
@@ -15,10 +14,6 @@ public class CircleButton extends JButton{
         setFocusPainted(false);
         
     }
-
-	public void addStone(Stone stone) {
-	        repaint();
-	}
 	
     @Override
     protected void paintComponent(Graphics g) {
@@ -36,14 +31,6 @@ public class CircleButton extends JButton{
     
 	public int getCircleDiameter() {
 		return circleDiameter;
-	}
-
-	public boolean isHasStone() {
-		return hasStone;
-	}
-
-	public void setHasStone(boolean hasStone) {
-		this.hasStone = hasStone;
 	}
 
 	
