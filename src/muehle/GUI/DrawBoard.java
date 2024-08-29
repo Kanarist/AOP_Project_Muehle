@@ -251,21 +251,21 @@ public class DrawBoard extends JPanel implements MouseListener {
 				for (int j = 0; j < felder[i].length; j++) {
 					CircleButton button = buttons[i][j];
 					if (button != null) {
+						button.removeAll();
 						Feld.Inhalt inhalt = felder[i][j].getInhalt();
 						if (inhalt == Feld.Inhalt.weiss) {
-							Stone stone = new Stone(true);
-							button.add(stone);
+							button.add(new Stone(true));
 							button.setBackground(Color.WHITE);
 							button.setEnabled(true);
 						} else if (inhalt == Feld.Inhalt.schwarz) {
-							Stone stone = new Stone(false);
-							button.add(stone);
+							button.add(new Stone(false));
 							button.setBackground(Color.BLACK);
 							button.setEnabled(true);
 						} else if (inhalt == Feld.Inhalt.verboten) {
 							button.setEnabled(false);
 						} else {
 							button.setBackground(Color.gray);
+							button.setEnabled(true);
 						}
 					}
 				}
