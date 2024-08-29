@@ -1,16 +1,16 @@
 package model;
 
-import java.util.Scanner;
-
 public class MuehleLogik {
-
+	
     private final Spielbrett spielbrett;
     private final Spieler spieler1;
 	private final Spieler spieler2;
     private boolean isPlayerOneTurn;  // Bestimmt, welcher Spieler am Zug ist
     private int gesetzteSteine;
     
-    private Runnable updateListener;
+    private boolean removeStoneStatus;
+    
+	private Runnable updateListener;
     
     public MuehleLogik() {
         // Initialisiere das Spielbrett und die Spieler
@@ -36,67 +36,82 @@ public class MuehleLogik {
     public void setUpdateListener(Runnable updateListener) {
 		this.updateListener = updateListener;
 	}
-    
+
     public boolean isSetPhase() {
     	return gesetzteSteine < 18;
     }
 
-	public void handlePlayerAction(int fromX, int fromY, int toX, int toY) {
+    public boolean isRemoveStoneStatus() {
+		return removeStoneStatus;
+	}
+    
+	public void handlePlayAction(int fromX, int fromY, int toX, int toY) {
         if (isGameOver()) {
             System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
             return;
         }
-
-        if (isSetPhase()) {
-            startSetPhase(toX, toY);
-        } else {
-        	startMovePhase(fromX, fromY, toX, toY);
+        
+        if(removeStoneStatus) {
+            return;
         }
 
-        if (isGameOver()) {
-            System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
+        boolean zugErfolgreich; 		
+        if (isSetPhase()) {
+        	zugErfolgreich = startSetPhase(toX, toY);
+        } else {
+        	zugErfolgreich = startMovePhase(fromX, fromY, toX, toY);
+        }
+
+        if (zugErfolgreich) {
+            if (isGameOver()) {
+                System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
+            } else {
+                removeStoneStatus = spielbrett.pruefeMuehle(toX, toY);
+                if(!removeStoneStatus) {
+                	isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
+                }
+            }
+            updateBoard();
         }
     }
+	
+    public boolean handleRemoveStone(int x, int y){
+    	if(removeStoneStatus) {
+            try {
+            	this.getCurrentPlayer().entferneStein(spielbrett, x, y, getOtherPlayer());
+                }
+            catch (FalscheFarbeExeption e) {
+                System.out.println("Ungültiger Zug: Das Feld ist unbesetzt. Versuche es erneut.");
+                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
+            }
+            catch (BesetztesFeldExeption f) {
+                System.out.println("Ungültiger Zug: Der Stein hat die falsche Farbe. Versuche es erneut.");
+                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
+            }
+            removeStoneStatus = false;
+            isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
+            updateBoard();
+            return true;  // Das Enternen war erfolgreich
+    	}
+    	return false;
+    }
 
-    private void startSetPhase(int x, int y) {
+    private boolean startSetPhase(int x, int y) {
         // Setzphase
         SpielPhasen.SetPhase setPhase = new SpielPhasen.SetPhase();
         Spieler currentPlayer = getCurrentPlayer();
         boolean zugErfolgreich = setPhase.handleAction(spielbrett, currentPlayer, -1, -1, x, y);
         if (zugErfolgreich) {
             gesetzteSteine++;
-            updateBoard();
-            if (spielbrett.pruefeMuele(x, y)) {
-            	Scanner scanner = new Scanner(System.in);
-                System.out.println("x: ");
-                int a = scanner.nextInt();
-                System.out.println("y: ");
-                int b = scanner.nextInt();
-            	this.removeStone(spielbrett, this.getOtherPlayer(), a, b);
-            	updateBoard();
-            }
-            isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
         }
+        return zugErfolgreich;
     }
 
-    private void startMovePhase(int fromX, int fromY, int toX, int toY) {
+    private boolean startMovePhase(int fromX, int fromY, int toX, int toY) {
         // Zugphase
         SpielPhasen.MovePhase movePhase = new SpielPhasen.MovePhase();
         Spieler currentPlayer = getCurrentPlayer();
-        boolean zugErfolgreich = movePhase.handleAction(spielbrett, currentPlayer, fromX, fromY, toX, toY);
-        if (zugErfolgreich) {
-            updateBoard();
-            if (spielbrett.pruefeMuele(toX, toY)) {
-            	Scanner scanner = new Scanner(System.in);
-                System.out.println("x: ");
-                int a = scanner.nextInt();
-                System.out.println("y: ");
-                int b = scanner.nextInt();
-            	this.removeStone(spielbrett, this.getOtherPlayer(), a, b);
-            	updateBoard();
-            }
-            isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
-        }
+        return movePhase.handleAction(spielbrett, currentPlayer, fromX, fromY, toX, toY);
     }
 
 
@@ -129,7 +144,7 @@ public class MuehleLogik {
 
     private boolean hasValidMoves(Spieler spieler) {
         // Überprüfe, ob der Spieler noch gültige Züge hat
-    	if(spieler.getSteine() == 3 ) {
+    	if(spieler.getSteine() == 3) {
     		// mit 3 Steinen kann er springen
     		return true;
     	}
@@ -189,22 +204,6 @@ public class MuehleLogik {
     	return spieler1;
     }
     
-    public boolean removeStone(Spielbrett spielbrett, Spieler player, int x, int y){
-        boolean zugErfolgreich = false;
-        while (!zugErfolgreich) {
-            try {
-            	this.getCurrentPlayer().entferneStein(spielbrett, x, y, player);
-                }
-            catch (FalscheFarbeExeption e) {
-                System.out.println("Ungültiger Zug: Das Feld ist unbesetzt. Versuche es erneut.");
-                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
-            }
-            catch (BesetztesFeldExeption f) {
-                System.out.println("Ungültiger Zug: Der Stein hat die falsche Farbe. Versuche es erneut.");
-                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
-            }
-        }
-        return true;  // Der Zug war erfolgreich
-    }
+
     
 }

@@ -25,7 +25,7 @@ public class Main {
 			muehle.bewegeStein(1, 3, 1, 6);
 			muehle.springeStein(1, 1, 0, 7);
 			muehle.entferneStein(spieler1, 0, 0);
-			if (muehle.pruefeMuele(1, 0)) {
+			if (muehle.pruefeMuehle(1, 0)) {
 				System.out.println("muele");
 			}
 			else {

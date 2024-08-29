@@ -136,7 +136,7 @@ public class Spielbrett {
 
 	}
 	
-	public boolean pruefeMuele(int x, int y) {
+	public boolean pruefeMuehle(int x, int y) {
 		int w = 0;
 		int s = 0;
 		for (int i = 0; i < felder.length; i++) {

@@ -3,7 +3,6 @@ package muehle.GUI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -25,9 +24,9 @@ import model.Spieler.Farbe;
 // ToDo: fix design of stones
 // ToDo: connect of logic
 
-public class DrawBoard extends JPanel implements MouseListener {
+public class DrawBoard extends JPanel implements MouseListener  {
 
-	private final MuehleLogik muehleMain;
+	private final MuehleLogik muehleLogik;
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
 	private CircleButton selectedButton = null;
@@ -35,7 +34,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 	private boolean fieldsCreated;
 
 	public DrawBoard(MuehleLogik muehleMain) {
-		this.muehleMain = muehleMain;
+		this.muehleLogik = muehleMain;
 		setPreferredSize(new Dimension(600, 600));
 		this.setBackground(Color.lightGray);
 		playerLabel = createText();
@@ -216,7 +215,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				if (muehleMain.getSpielbrett().getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
+				if (muehleLogik.getSpielbrett().getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
 					CircleButton button = new CircleButton();
 					button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
 					button.setEnabled(false);
@@ -239,7 +238,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 
 	public JLabel createText() {
 		JLabel label = new JLabel(
-			muehleMain.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ
+			muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ
 				? "Spieler Schwarz ist dran"
 				: "Spieler Weiß ist dran",
 			JLabel.CENTER);
@@ -249,7 +248,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 	}
 
 	public void updateBoard() {
-		final Feld[][] felder = muehleMain.getSpielbrett().getFelder();
+		final Feld[][] felder = muehleLogik.getSpielbrett().getFelder();
 		EventQueue.invokeLater(() -> {
 			for (int i = 0; i < felder.length; i++) {
 				for (int j = 0; j < felder[i].length; j++) {
@@ -278,9 +277,9 @@ public class DrawBoard extends JPanel implements MouseListener {
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(MouseEvent mouseEvent) {
 
-		Object source = e.getSource();
+		Object source = mouseEvent.getSource();
 		if (!(source instanceof CircleButton)) {
 			return;
 		}
@@ -293,16 +292,20 @@ public class DrawBoard extends JPanel implements MouseListener {
 		int x = position.getXAxis();
 		int y = position.getYAxis();
 
-		final Spielbrett spielbrett = muehleMain.getSpielbrett();
+		final Spielbrett spielbrett = muehleLogik.getSpielbrett();
+		
+		if(muehleLogik.isRemoveStoneStatus()) {
+			muehleLogik.handleRemoveStone(x, y);
+		}
 
 		// Phase 1
-		if (muehleMain.isSetPhase()) {
-			muehleMain.handlePlayerAction(-1, -1, x, y);
+		else if (muehleLogik.isSetPhase()) {
+			muehleLogik.handlePlayAction(-1, -1, x, y);
 
 		// Phase 2
 		} else {
 			if (selectedButton == null) {
-				if(spielbrett.getFelder()[y][x].gehoertSpieler(muehleMain.getCurrentPlayer())) {
+				if(spielbrett.getFelder()[y][x].gehoertSpieler(muehleLogik.getCurrentPlayer())) {
 					selectedButton = button;
 					System.out.println("Stein ausgewählt bei Position: (" + x + ", " + y + ")");
 				} else {
@@ -316,7 +319,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 					// neuer Button wurde geklickt
 					try {
 						Position selectedPosition = getPosition4Button(selectedButton);
-						muehleMain.handlePlayerAction(selectedPosition.getXAxis(), selectedPosition.getYAxis(), x, y);
+						muehleLogik.handlePlayAction(selectedPosition.getXAxis(), selectedPosition.getYAxis(), x, y);
 						selectedButton = null;
 					} catch (Exception ex) {
 						System.out.println("Fehler beim Bewegen des Steins: " + ex.getMessage());
