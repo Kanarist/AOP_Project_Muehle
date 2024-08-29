@@ -28,15 +28,20 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	private final MuehleLogik muehleLogik;
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
-	private JLabel playerLabel;
+	private final JLabel playerLabel = new JLabel("", JLabel.CENTER);
+		
 	private boolean fieldsCreated;
 
 	public DrawBoard(MuehleLogik muehleMain) {
 		this.muehleLogik = muehleMain;
 		setPreferredSize(new Dimension(600, 600));
 		this.setBackground(Color.lightGray);
-		playerLabel = createText();
+		
+		playerLabel.setForeground(Color.BLACK);
+		playerLabel.setFont(new Font("Arial", Font.BOLD, 16));
 		add(playerLabel);
+		
+		updatePlayerLabel();
 	}
 
 	// create squares and lines of board
@@ -78,9 +83,6 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	
 	// create of circles
 	private void createFields() {
-		if(fieldsCreated) {
-			return;
-		}
 		
 		int var = 200;
 		int panelWidth = getWidth();
@@ -210,22 +212,38 @@ public class DrawBoard extends JPanel implements MouseListener  {
 				}
 			}
 		}
+		
+		
 
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
-				if (muehleLogik.getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
-					CircleButton button = new CircleButton();
-					button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
-					button.setEnabled(false);
-					button.setBackground(Color.gray); // Test color
-					button.addMouseListener(this);
-					buttons[i][j] = button;
-					add(button);
+		if(fieldsCreated) {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					CircleButton button = buttons[i][j];
+					if(button != null) {
+						button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
+					}
 				}
 			}
+			
+		} else {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					if (muehleLogik.getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
+						CircleButton button = new CircleButton();
+						button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
+						button.setEnabled(false);
+						button.setBackground(Color.gray); // Test color
+						button.addMouseListener(this);
+						buttons[i][j] = button;
+						add(button);
+					}
+				}
+			}
+			fieldsCreated = true;
 		}
-		updateBoard();
-		fieldsCreated = true;
+		
+		playerLabel.setHorizontalAlignment(JLabel.RIGHT);
+
 	}
 
 	 public void paintComponent(Graphics g) {
@@ -234,15 +252,19 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		createFields();
 	}
 
-	public JLabel createText() {
-		JLabel label = new JLabel(
-			muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ
-				? "Spieler Schwarz ist dran"
-				: "Spieler Weiß ist dran",
-			JLabel.CENTER);
-		label.setForeground(Color.BLACK);
-		label.setFont(new Font("Arial", Font.BOLD, 16));
-		return label;
+	private void updatePlayerLabel() {
+		String text = String.format("Spieler %s ist dran: ",
+			muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ ? "Schwarz" : "Weiß");
+		
+		if(muehleLogik.isRemoveStoneStatus()) {
+			text += "!!! M Ü H L E !!! Nimm einen Stein vom Gegner!";
+		} else if(muehleLogik.isSetPhase()) {
+			text += "Setze einen Stein!";
+		} else {
+			text += "Ziehe einen Stein!";
+		}
+		
+		playerLabel.setText(text);
 	}
 
 	public void updateBoard() {
@@ -272,6 +294,7 @@ public class DrawBoard extends JPanel implements MouseListener  {
 				}
 			}
 		});
+		updatePlayerLabel();
 	}
 
 	@Override

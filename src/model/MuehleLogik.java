@@ -26,8 +26,11 @@ public class MuehleLogik {
     public void setUpdateListener(Runnable updateListener) {
 		this.updateListener = updateListener;
 	}
-
     
+	public boolean isRemoveStoneStatus() {
+		return removeStoneStatus;
+	}
+
 	public Feld[][] getFelder() {
 		return spielbrett.getFelder();
 	}
@@ -99,7 +102,7 @@ public class MuehleLogik {
     	return false;
     }
 
-    private boolean isSetPhase() {
+    public boolean isSetPhase() {
     	return gesetzteSteine < 18;
     }
 
