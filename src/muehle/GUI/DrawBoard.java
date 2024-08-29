@@ -25,6 +25,8 @@ import model.Spieler.Farbe;
 
 public class DrawBoard extends JPanel implements MouseListener  {
 
+	private static final long serialVersionUID = -4262598812591836725L;
+	
 	private final MuehleLogik muehleLogik;
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
@@ -349,20 +351,10 @@ public class DrawBoard extends JPanel implements MouseListener  {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		if (e.getSource() instanceof CircleButton) {
-			CircleButton button = (CircleButton) e.getSource();
-//	        System.out.println("Cursor is on Button!");	// TEST
-		}
-
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		if (e.getSource() instanceof CircleButton) {
-			CircleButton button = (CircleButton) e.getSource();
-//	        System.out.println("Cursor NOT is on Button!");	// TEST
-		}
-
 	}
 
 	class RoundedBorder implements Border {

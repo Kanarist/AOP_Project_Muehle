@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 
 public class MenuFrame extends JFrame {
 
-    public MenuFrame() {
+	private static final long serialVersionUID = -7158389682750440270L;
+
+	public MenuFrame() {
         setTitle("Mühle - Hauptmenü");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);

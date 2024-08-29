@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 public class Stone extends JPanel {
 
 
+	private static final long serialVersionUID = -173561275626778530L;
 	private final int stoneRadius = 35;
 	private boolean isWhite;
 	

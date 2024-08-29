@@ -80,7 +80,7 @@ public class MuehleLogik {
             if (gameOver) {
                 System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
             } else {
-                removeStoneStatus = spielbrett.pruefeMuehle(x, y);
+                removeStoneStatus = spielbrett.istTeilVonMuehle(x, y);
                 if(!removeStoneStatus) {
                 	isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
                 }
@@ -92,14 +92,10 @@ public class MuehleLogik {
     private boolean handleRemoveStone(int x, int y){
     	if(removeStoneStatus) {
             try {
-            	this.getCurrentPlayer().entferneStein(spielbrett, x, y, getOtherPlayer());
+            	entferneStein(x, y);
                 }
-            catch (FalscheFarbeExeption e) {
-                System.out.println("Ungültiger Zug: Das Feld ist unbesetzt. Versuche es erneut.");
-                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
-            }
-            catch (BesetztesFeldExeption f) {
-                System.out.println("Ungültiger Zug: Der Stein hat die falsche Farbe. Versuche es erneut.");
+            catch (Exception e) {
+                System.out.println("Ungültiger Zug: " + e.getMessage());
                 return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
             }
             removeStoneStatus = false;
@@ -107,6 +103,24 @@ public class MuehleLogik {
     	}
     	return false;
     }
+    
+    public void entferneStein(int x, int y) throws BesetztesFeldExeption, 
+	FalscheFarbeExeption,UnremovebleExeption {
+		if (spielbrett.istFeldFrei(x,y)) {
+			throw new BesetztesFeldExeption();
+		}
+		if(!getFelder()[y][x].gehoertSpieler(getOtherPlayer())) {
+			throw new FalscheFarbeExeption(); 
+		}
+		if(spielbrett.istTeilVonMuehle(x, y)
+				&& spielbrett.freieSteineVorhanden(getFelder()[y][x].getInhalt())) {
+			throw new UnremovebleExeption();
+		}
+		getFelder()[y][x].setInhalt(Feld.Inhalt.leer);
+		getOtherPlayer().setSteine(getOtherPlayer().getSteine()-1);
+
+	}
+    
 
     public boolean isSetPhase() {
     	return gesetzteSteine < 18;

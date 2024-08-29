@@ -1,5 +1,6 @@
 package model;
 
+import model.Feld.Inhalt;
 import muehle.GUI.Position;
 
 public class Spielbrett {
@@ -149,7 +150,7 @@ public class Spielbrett {
 
 	}
 	
-	public boolean pruefeMuehle(int x, int y) {
+	public boolean istTeilVonMuehle(int x, int y) {
 		int w = 0;
 		int s = 0;
 		for (int i = 0; i < felder.length; i++) {
@@ -176,17 +177,29 @@ public class Spielbrett {
 			if (w > 2 || s > 2) {
 			return true;
 		}
-		return false;
-		
+		return false;		
 	}
 	
 	public void BrettAusgeben() {
-		for (int i = 0; i < this.getFelder().length; i++) {
-            for (int j = 0; j < this.getFelder().length; j++) {
-                System.out.printf("%-10s", this.getFelder()[i][j].getInhalt());
+		for (int y = 0; y < felder.length; y++) {
+            for (int x = 0; x < felder[y].length; x++) {
+                System.out.printf("%-10s", this.getFelder()[y][x].getInhalt());
             }
             System.out.println();
         }
+	}
+	
+	public boolean freieSteineVorhanden(Inhalt inhalt) {
+		for (int y = 0; y < felder.length; y++) {
+            for (int x = 0; x < felder[y].length; x++) {
+                if(this.felder[y][x].getInhalt() == inhalt) {
+                	if(!istTeilVonMuehle(x, y)) {
+                		return true;
+                	}
+                }
+            }
+        }
+		return false;
 	}
 	
 }

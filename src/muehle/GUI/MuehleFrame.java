@@ -5,6 +5,8 @@ import model.MuehleLogik;
 
 public class MuehleFrame extends JFrame{
 	
+	private static final long serialVersionUID = 4368963525542508317L;
+	
 	private final MuehleLogik muehleMain = new MuehleLogik();
 
 	public MuehleFrame() {

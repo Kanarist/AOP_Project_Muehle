@@ -4,6 +4,8 @@ import javax.swing.JButton;
 
 public class CircleButton extends JButton{
 	
+	private static final long serialVersionUID = 2303935598718482558L;
+	
 	private final int circleDiameter = 30;
 	private boolean hasStone = false;
 	
