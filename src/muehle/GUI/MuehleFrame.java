@@ -20,7 +20,6 @@ public class MuehleFrame extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(true);
 		setMinimumSize(new Dimension(900, 900));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
         final DrawBoard drawBoard = new DrawBoard(muehleLogik);
 		muehleLogik.setUpdateListener(() -> drawBoard.updateBoard());

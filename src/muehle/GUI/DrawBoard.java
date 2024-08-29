@@ -31,7 +31,7 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	private final MuehleLogik muehleLogik;
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
-	private final JLabel playerLabel = new JLabel("", JLabel.CENTER);
+	private final JLabel playerLabel = new JLabel();
 		
 	private boolean fieldsCreated;
 
@@ -41,7 +41,7 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		this.setBackground(Color.lightGray);
 		
 		playerLabel.setForeground(Color.BLACK);
-		playerLabel.setFont(new Font("Arial", Font.BOLD, 16));
+		playerLabel.setFont(new Font("Arial", Font.BOLD, 24));
 		add(playerLabel);
 		
 		updatePlayerLabel();
