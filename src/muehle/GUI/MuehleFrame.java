@@ -1,7 +1,7 @@
 package muehle.GUI;
 import java.awt.Dimension;
 
-import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -14,14 +14,15 @@ public class MuehleFrame extends JFrame{
 	private static final long serialVersionUID = 4368963525542508317L;
 	
 	private final MuehleLogik muehleLogik = new MuehleLogik();
-
+	private final DrawBoard drawBoard = new DrawBoard(muehleLogik);
+	
+	
 	public MuehleFrame() {
 		setTitle("Mühle");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(true);
 		setMinimumSize(new Dimension(900, 900));
 		
-        final DrawBoard drawBoard = new DrawBoard(muehleLogik);
 		muehleLogik.setUpdateListener(() -> drawBoard.updateBoard());
 		
 		add(drawBoard);
@@ -53,6 +54,9 @@ public class MuehleFrame extends JFrame{
 		JMenu debugMenu = new JMenu("Debug");
 		menuBar.add(debugMenu);
 		
+		JMenuItem positionItem = new JCheckBoxMenuItem("Position anzeigen");		
+		positionItem.addActionListener(actionEvent -> drawBoard.showPostions(positionItem.isSelected()));
+		debugMenu.add(positionItem);
 	}
 	
 }
