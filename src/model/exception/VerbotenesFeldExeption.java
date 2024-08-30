@@ -1,4 +1,4 @@
-package model;
+package model.exception;
 
 public class VerbotenesFeldExeption extends RuntimeException {
 	

@@ -1,5 +1,10 @@
 package model;
 
+import model.exception.BesetztesFeldException;
+import model.exception.FalscheFarbeExeption;
+import model.exception.LogikException;
+import model.exception.UnremovebleExeption;
+
 public class MuehleLogik {
 	
     private Spielbrett spielbrett;
@@ -13,6 +18,8 @@ public class MuehleLogik {
 	private Runnable updateListener;
 	
 	private boolean gameOver;
+	
+	private String debugMessage;
     
 	public MuehleLogik() {
         // Initialisiere das Spielbrett und die Spieler
@@ -56,74 +63,79 @@ public class MuehleLogik {
 	}
 
 	public void handlePlayAction(int x, int y) {
+		debugMessage = null;
+		
         if (gameOver) {
             return;
         }
         
-        boolean zugErfolgreich = false; 		
+        boolean setOrMoveIsfinished = false;
 
-        if(removeStoneStatus) {
-        	zugErfolgreich = handleRemoveStone(x, y);
-        } 
-        else if (isSetPhase()) {
-        	zugErfolgreich = startSetPhase(x, y);
-        } else {
-        	Position position = spielbrett.getSelPostion();
-        	if(position != null) {
-        		
-        		// Wenn gleiche Position, dann Selektion wieder aufheben
-        		if(position.getXAxis() == x && position.getYAxis() == y) {
-        			spielbrett.setSelPostion(null);
-        		} else {
-                	zugErfolgreich = startMovePhase(position.getXAxis(), position.getYAxis(), x, y);
-                	if(zugErfolgreich) {
-                		spielbrett.setSelPostion(null);
-                	}
-        		}
-        			
-        	} else {
-				if(spielbrett.getFelder()[y][x].gehoertSpieler(getCurrentPlayer())) {
-	        		spielbrett.setSelPostion(new Position(x,y));
-					System.out.println("Stein ausgewählt bei Position: (" + x + ", " + y + ")");
-				} else {
-					System.out.println("Kein gültiger Stein zum Auswählen!(" + x + ", " + y + ")");
-				}
-        	}
-        }
-
-        if (zugErfolgreich) {
-        	updateGameOver();
-            if (gameOver) {
-                System.out.println("Spiel vorbei! " + getWinner().getName() + " hat gewonnen!");
+        try {
+            if(removeStoneStatus) {
+            	handleRemoveStone(x, y);
+            	setOrMoveIsfinished = true;
+            } 
+            else if (isSetPhase()) {
+            	doSetAction(x, y);
+            	setOrMoveIsfinished = true;
             } else {
-                removeStoneStatus = spielbrett.istTeilVonMuehle(x, y);
-                if(!removeStoneStatus) {
-                	isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
+            	Position position = spielbrett.getSelPostion();
+            	if(position != null) {
+            		
+            		// Wenn gleiche Position, dann Selektion wieder aufheben
+            		if(position.getXAxis() == x && position.getYAxis() == y) {
+            			spielbrett.setSelPostion(null);
+            		} else {
+                    	doMoveAction(position.getXAxis(), position.getYAxis(), x, y);
+                		spielbrett.setSelPostion(null);
+                		setOrMoveIsfinished = true;
+            		}
+            			
+            	} else {
+    				if(spielbrett.getFelder()[y][x].gehoertSpieler(getCurrentPlayer())) {
+    	        		spielbrett.setSelPostion(new Position(x,y));
+    					debugMessage = "Stein ausgewählt bei Position: (" + x + ", " + y + ")";
+    				} else {
+    					debugMessage = "Kein gültiger Stein zum Auswählen!(" + x + ", " + y + ")";
+    				}
+            	}
+            }
+
+            if(setOrMoveIsfinished) {
+            	updateGameOver();
+                if (gameOver) {
+                	debugMessage = "Spiel vorbei! " + getWinner().getName() + " hat gewonnen!";
+                } else {
+                    removeStoneStatus = spielbrett.istTeilVonMuehle(x, y);
+                    if(!removeStoneStatus) {
+                    	isPlayerOneTurn = !isPlayerOneTurn;  // Spielerwechsel
+                    }
                 }
             }
-        }
+            
+        } catch (Exception exception) {
+        	debugMessage = exception.getMessage();
+		}
         updateBoard();
     }
+
+	public String getDebugMessage() {
+		return debugMessage;
+	}
+
 	
-    private boolean handleRemoveStone(int x, int y){
+    private void handleRemoveStone(int x, int y) throws BesetztesFeldException, FalscheFarbeExeption, UnremovebleExeption {
     	if(removeStoneStatus) {
-            try {
-            	entferneStein(x, y);
-                }
-            catch (Exception e) {
-                System.out.println("Ungültiger Zug: " + e.getMessage());
-                return false;  // Der Zug ist nicht erfolgreich, also muss der Spieler erneut setzen
-            }
+        	entferneStein(x, y);
             removeStoneStatus = false;
-            return true;  // Das Enternen war erfolgreich
     	}
-    	return false;
     }
     
-    public void entferneStein(int x, int y) throws BesetztesFeldExeption, 
+    public void entferneStein(int x, int y) throws BesetztesFeldException, 
 	FalscheFarbeExeption,UnremovebleExeption {
 		if (spielbrett.istFeldFrei(x,y)) {
-			throw new BesetztesFeldExeption();
+			throw new BesetztesFeldException();
 		}
 		if(!getFelder()[y][x].gehoertSpieler(getOtherPlayer())) {
 			throw new FalscheFarbeExeption(); 
@@ -142,22 +154,19 @@ public class MuehleLogik {
     	return gesetzteSteine < 18;
     }
 
-    private boolean startSetPhase(int x, int y) {
+    private void doSetAction(int x, int y) throws LogikException {
         // Setzphase
         SpielPhasen.SetPhase setPhase = new SpielPhasen.SetPhase();
         Spieler currentPlayer = getCurrentPlayer();
-        boolean zugErfolgreich = setPhase.handleAction(spielbrett, currentPlayer, -1, -1, x, y);
-        if (zugErfolgreich) {
-            gesetzteSteine++;
-        }
-        return zugErfolgreich;
+        setPhase.handleAction(spielbrett, currentPlayer, -1, -1, x, y);
+        gesetzteSteine++;
     }
 
-    private boolean startMovePhase(int fromX, int fromY, int toX, int toY) {
+    private void doMoveAction(int fromX, int fromY, int toX, int toY) throws LogikException {
         // Zugphase
         SpielPhasen.MovePhase movePhase = new SpielPhasen.MovePhase();
         Spieler currentPlayer = getCurrentPlayer();
-        return movePhase.handleAction(spielbrett, currentPlayer, fromX, fromY, toX, toY);
+        movePhase.handleAction(spielbrett, currentPlayer, fromX, fromY, toX, toY);
     }
 
 
@@ -251,11 +260,13 @@ public class MuehleLogik {
     }
     
     public void debugChangePlayer() {
+    	debugMessage = null;
     	isPlayerOneTurn = !isPlayerOneTurn;
     	updateBoard();
     }
 
     public void debugForceMovePhase() {
+    	debugMessage = null;
     	if(gesetzteSteine < 18) {
     		gesetzteSteine = 18;
     		updateBoard();
@@ -263,6 +274,7 @@ public class MuehleLogik {
     }
     
     public void debugPlaceStone(Feld.Inhalt inhalt, int x, int y) {
+    	debugMessage = null;
     	switch(spielbrett.getFelder()[y][x].getInhalt()) {
     	case verboten:
     		return;

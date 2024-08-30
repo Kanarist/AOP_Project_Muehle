@@ -69,6 +69,10 @@ public class MuehleFrame extends JFrame{
 		JCheckBoxMenuItem placeStoneItem = new JCheckBoxMenuItem("Kontextmenü Steine");
 		placeStoneItem.addActionListener(actionEvent -> drawBoard.setShowStoneMenu(placeStoneItem.isSelected()));
 		debugMenu.add(placeStoneItem);
+		
+		JCheckBoxMenuItem debugMessageItem = new JCheckBoxMenuItem("Debug Messages");		
+		debugMessageItem.addActionListener(actionEvent -> drawBoard.setShowDebugMessage(debugMessageItem.isSelected()));
+		debugMenu.add(debugMessageItem);
 	}
 	
 }

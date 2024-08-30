@@ -1,6 +1,7 @@
 package model;
 
 import model.Feld.Inhalt;
+import model.exception.VerbotenesFeldExeption;
 
 public class Spielbrett {
 
@@ -106,47 +107,6 @@ public class Spielbrett {
 			}
 		}
 		return false;
-	}
-	
-	public void setzeStein(Spieler spieler, int x, int y) throws BesetztesFeldExeption{
-		if (this.istFeldFrei(x,y)) {
-			this.getFelder()[y][x].setInhalt(Feld.farbeFeld(spieler));
-			spieler.setSteine(spieler.getSteine() + 1);
-		}
-		else {
-			throw new BesetztesFeldExeption();
-		}
-	}
-	
-	public void bewegeStein(int x1, int y1, int x2, int y2) throws BesetztesFeldExeption,
-	NichtBenachbartExeption{
-		if (!this.istFeldFrei(x2,y2) || this.istFeldFrei(x1,y1)) {
-			throw new BesetztesFeldExeption();
-		}
-		if (!this.istBenachbart(x1, y1, x2, y2)) {
-			throw new NichtBenachbartExeption();
-		}
-		this.getFelder()[y2][x2].setInhalt(this.getFelder()[y1][x1].getInhalt());
-		this.getFelder()[y1][x1].setInhalt(Feld.Inhalt.leer);
-
-	}
-	
-	public void springeStein(int x1, int y1, int x2, int y2) throws BesetztesFeldExeption{
-		if (!this.istFeldFrei(x2,y2) || this.istFeldFrei(x1,y1)) {
-			throw new BesetztesFeldExeption();
-		}
-		this.getFelder()[y2][x2].setInhalt(this.getFelder()[x1][y1].getInhalt());;
-		this.getFelder()[y1][x1].setInhalt(Feld.Inhalt.leer);
-
-	}
-	
-	public void entferneStein(Spieler spieler2, int x, int y) throws BesetztesFeldExeption{
-		if (this.istFeldFrei(x,y)) {
-			throw new BesetztesFeldExeption();
-		}
-		this.getFelder()[y][x].setInhalt(Feld.Inhalt.leer);
-		spieler2.setSteine(spieler2.getSteine() - 1);
-
 	}
 	
 	public boolean istTeilVonMuehle(int x, int y) {

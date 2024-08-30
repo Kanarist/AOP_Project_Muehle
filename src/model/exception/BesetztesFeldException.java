@@ -1,9 +1,9 @@
-package model;
+package model.exception;
 
 @SuppressWarnings("serial")
-public class BesetztesFeldExeption extends Exception {
+public class BesetztesFeldException extends LogikException {
 	
-	public BesetztesFeldExeption() {
+	public BesetztesFeldException() {
         super("Das Feld ist entweder bereits besetzt oder es gibt keinen Stein zum ziehen oder entfernen.");
     }
 

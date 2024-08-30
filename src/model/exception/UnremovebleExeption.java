@@ -1,4 +1,4 @@
-package model;
+package model.exception;
 
 public class UnremovebleExeption  extends Exception{
 	private static final long serialVersionUID = 5643705229050554125L;

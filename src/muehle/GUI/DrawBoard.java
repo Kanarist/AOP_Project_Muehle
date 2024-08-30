@@ -21,47 +21,54 @@ import model.MuehleLogik;
 import model.Position;
 import model.Spieler.Farbe;
 
-// ToDo: fix design of stones
-// ToDo: connect of logic
-
-public class DrawBoard extends JPanel implements MouseListener  {
+public class DrawBoard extends JPanel implements MouseListener {
 
 	private static final long serialVersionUID = -4262598812591836725L;
-	
+
 	private final MuehleLogik muehleLogik;
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
 	private final JLabel playerLabel = new JLabel("");
+	private final JLabel debugMessageLabel = new JLabel("");
 	private boolean showStoneMenu;
-		
+
 	public DrawBoard(MuehleLogik muehleLogik) {
 		this.muehleLogik = muehleLogik;
 		setPreferredSize(new Dimension(600, 600));
 		this.setBackground(Color.lightGray);
-		
+
 		playerLabel.setForeground(Color.BLACK);
 		playerLabel.setFont(new Font("Arial", Font.BOLD, 24));
 		add(playerLabel);
 		
+		debugMessageLabel.setForeground(Color.RED);
+		debugMessageLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+		debugMessageLabel.setVisible(false);
+		add(debugMessageLabel);
+
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (muehleLogik.getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
 					CircleButton button = new CircleButton();
 					button.setEnabled(false);
-					button.setBackground(Color.gray); 
-				    button.setBorderPainted(false);
+					button.setBackground(Color.gray);
+					button.setBorderPainted(false);
 					button.addMouseListener(this);
 					buttons[i][j] = button;
 					add(button);
 				}
 			}
 		}
-		
+
 		updatePlayerLabel();
 	}
 
 	public void setShowStoneMenu(boolean showStoneMenu) {
 		this.showStoneMenu = showStoneMenu;
+	}
+	
+	public void setShowDebugMessage(boolean showDebugMessage) {
+		debugMessageLabel.setVisible(showDebugMessage);
 	}
 
 	// create squares and lines of board
@@ -100,10 +107,9 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		}
 	}
 
-	
 	// create of circles
 	private void paintFields() {
-		
+
 		int var = 200;
 		int panelWidth = getWidth();
 		int panelHeight = getHeight();
@@ -232,55 +238,57 @@ public class DrawBoard extends JPanel implements MouseListener  {
 				}
 			}
 		}
-		
+
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				CircleButton button = buttons[i][j];
-				if(button != null) {
+				if (button != null) {
 					button.setBounds(circles[j][i][0], circles[j][i][1], buttonDiameter, buttonDiameter);
 				}
 			}
 		}
-		
+
 		playerLabel.setBounds(10, 10, panelWidth - 20, 40);
+
+		debugMessageLabel.setBounds(10, panelHeight - 40, panelWidth - 20, 30);
 	}
 
 	public void showPostions(boolean show) {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				CircleButton button = buttons[i][j];
-				if(button != null) {
+				if (button != null) {
 					button.setText(show ? j + "/" + i : "");
 				}
 			}
 		}
 	}
 
-    public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		createSquaresAndLines(g);
 		paintFields();
 	}
 
 	private void updatePlayerLabel() {
-		
+
 		String text;
-		
-		if(muehleLogik.isGameOver()) {
+
+		if (muehleLogik.isGameOver()) {
 			text = "Spiel vorbei! " + muehleLogik.getWinner().getName() + " hat gewonnen!";
 		} else {
 			text = String.format("Spieler %s ist dran: ",
 					muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ ? "Schwarz" : "Weiß");
-				
-			if(muehleLogik.isRemoveStoneStatus()) {
+
+			if (muehleLogik.isRemoveStoneStatus()) {
 				text += "!!! M Ü H L E !!! Nimm einen Stein vom Gegner!";
-			} else if(muehleLogik.isSetPhase()) {
+			} else if (muehleLogik.isSetPhase()) {
 				text += "Setze einen Stein!";
 			} else {
 				text += "Ziehe einen Stein!";
 			}
 		}
-		
+
 		playerLabel.setText(text);
 	}
 
@@ -310,6 +318,10 @@ public class DrawBoard extends JPanel implements MouseListener  {
 			}
 		});
 		updatePlayerLabel();
+		
+		
+		String debugMessage = muehleLogik.getDebugMessage();
+		debugMessageLabel.setText(debugMessage != null ? debugMessage : "");
 	}
 
 	private Position getPosition4Button(CircleButton button) {
@@ -325,24 +337,24 @@ public class DrawBoard extends JPanel implements MouseListener  {
 
 	private void showContextMenu4Button(int clickPosX, int clickPosY, CircleButton button) {
 		Position position = getPosition4Button(button);
-		if(position != null) {
+		if (position != null) {
 			JPopupMenu contextMenu = new JPopupMenu();
 			JMenuItem setzeLeer = new JMenuItem("Stein entfernen");
-			setzeLeer.addActionListener(actionEvent
-				-> muehleLogik.debugPlaceStone(Feld.Inhalt.leer, position.getXAxis(), position.getYAxis()));
+			setzeLeer.addActionListener(actionEvent -> muehleLogik.debugPlaceStone(Feld.Inhalt.leer,
+					position.getXAxis(), position.getYAxis()));
 			contextMenu.add(setzeLeer);
-	        JMenuItem setzeWeiss = new JMenuItem("weißen Stein setzen");
-	        setzeWeiss.addActionListener(actionEvent
-				-> muehleLogik.debugPlaceStone(Feld.Inhalt.weiss, position.getXAxis(), position.getYAxis()));
-	        contextMenu.add(setzeWeiss);
-	        JMenuItem setzeSchwarz = new JMenuItem("schwarzen Stein setzen");
-	        setzeSchwarz.addActionListener(actionEvent
-				-> muehleLogik.debugPlaceStone(Feld.Inhalt.schwarz, position.getXAxis(), position.getYAxis()));
-	        contextMenu.add(setzeSchwarz);
-	        contextMenu.show(button, clickPosX, clickPosY);			
+			JMenuItem setzeWeiss = new JMenuItem("weißen Stein setzen");
+			setzeWeiss.addActionListener(actionEvent -> muehleLogik.debugPlaceStone(Feld.Inhalt.weiss,
+					position.getXAxis(), position.getYAxis()));
+			contextMenu.add(setzeWeiss);
+			JMenuItem setzeSchwarz = new JMenuItem("schwarzen Stein setzen");
+			setzeSchwarz.addActionListener(actionEvent -> muehleLogik.debugPlaceStone(Feld.Inhalt.schwarz,
+					position.getXAxis(), position.getYAxis()));
+			contextMenu.add(setzeSchwarz);
+			contextMenu.show(button, clickPosX, clickPosY);
 		}
 	}
-	
+
 	@Override
 	public void mouseClicked(MouseEvent mouseEvent) {
 
@@ -352,24 +364,17 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		}
 
 		CircleButton button = (CircleButton) source;
-		
-	    if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+
+		if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
 			Position position = getPosition4Button(button);
 			if (position == null) {
 				return;
 			}
-			int x = position.getXAxis();
-			int y = position.getYAxis();
-			
-			try {
-				muehleLogik.handlePlayAction(x, y);
-			} catch(Exception ex) {
-				System.out.println("Fehler beim Ausführen einer Spielaktion " + ex.getMessage());
-			}
-	    }
-	    else if(SwingUtilities.isRightMouseButton(mouseEvent) && showStoneMenu) {
-	    	showContextMenu4Button(mouseEvent.getX(), mouseEvent.getY(), button);
-	    }
+			muehleLogik.handlePlayAction(position.getXAxis(), position.getYAxis());
+
+		} else if (SwingUtilities.isRightMouseButton(mouseEvent) && showStoneMenu) {
+			showContextMenu4Button(mouseEvent.getX(), mouseEvent.getY(), button);
+		}
 
 	}
 
@@ -389,6 +394,5 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	@Override
 	public void mouseExited(MouseEvent e) {
 	}
-
 
 }
