@@ -57,6 +57,14 @@ public class MuehleFrame extends JFrame{
 		JMenuItem positionItem = new JCheckBoxMenuItem("Position anzeigen");		
 		positionItem.addActionListener(actionEvent -> drawBoard.showPostions(positionItem.isSelected()));
 		debugMenu.add(positionItem);
+		
+		JMenuItem changePlayerItem = new JMenuItem("Wechsel Spieler");
+		changePlayerItem.addActionListener(actionEvent -> muehleLogik.debugChangePlayer());
+		debugMenu.add(changePlayerItem);
+		
+		JMenuItem forceMovePhase = new JMenuItem("Setzphase überspringen");
+		forceMovePhase.addActionListener(actionEvent -> muehleLogik.debugForceMovePhase());
+		debugMenu.add(forceMovePhase);
 	}
 	
 }

@@ -250,6 +250,15 @@ public class MuehleLogik {
     	return spieler1;
     }
     
+    public void debugChangePlayer() {
+    	isPlayerOneTurn = !isPlayerOneTurn;
+    	updateBoard();
+    }
 
-    
+    public void debugForceMovePhase() {
+    	if(gesetzteSteine < 18) {
+    		gesetzteSteine = 18;
+    		updateBoard();
+    	}
+    }
 }
