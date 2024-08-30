@@ -204,11 +204,11 @@ public class MuehleLogik {
     		return true;
     	}
     	Feld[][] felder = spielbrett.getFelder();
-        for (int i = 0; i < felder.length; i++) {
-            for (int j = 0; j < felder[i].length; j++) {
-                if (felder[i][j].getInhalt() == Feld.farbeFeld(spieler)) {
+        for (int y = 0; y < felder.length; y++) {
+            for (int x = 0; x < felder[y].length; x++) {
+                if (felder[y][x].getInhalt() == Feld.farbeFeld(spieler)) {
                     // Überprüfe mögliche Züge für diesen Stein
-                    if (canMove(i, j)) {
+                    if (canMove(x, y)) {
                         return true;
                     }
                 }
