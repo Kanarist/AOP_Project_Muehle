@@ -31,7 +31,7 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	private final MuehleLogik muehleLogik;
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
-	private final JLabel playerLabel = new JLabel();
+	private final JLabel playerLabel = new JLabel("");
 		
 	public DrawBoard(MuehleLogik muehleLogik) {
 		this.muehleLogik = muehleLogik;
@@ -236,6 +236,8 @@ public class DrawBoard extends JPanel implements MouseListener  {
 				}
 			}
 		}
+		
+		playerLabel.setBounds(10, 10, panelWidth - 20, 40);
 	}
 
 	public void showPostions(boolean show) {
