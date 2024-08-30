@@ -54,7 +54,7 @@ public class MuehleFrame extends JFrame{
 		JMenu debugMenu = new JMenu("Debug");
 		menuBar.add(debugMenu);
 		
-		JMenuItem positionItem = new JCheckBoxMenuItem("Position anzeigen");		
+		JCheckBoxMenuItem positionItem = new JCheckBoxMenuItem("Position anzeigen");		
 		positionItem.addActionListener(actionEvent -> drawBoard.showPostions(positionItem.isSelected()));
 		debugMenu.add(positionItem);
 		
@@ -65,6 +65,10 @@ public class MuehleFrame extends JFrame{
 		JMenuItem forceMovePhase = new JMenuItem("Setzphase überspringen");
 		forceMovePhase.addActionListener(actionEvent -> muehleLogik.debugForceMovePhase());
 		debugMenu.add(forceMovePhase);
+		
+		JCheckBoxMenuItem placeStoneItem = new JCheckBoxMenuItem("Kontextmenü Steine");
+		placeStoneItem.addActionListener(actionEvent -> drawBoard.setShowStoneMenu(placeStoneItem.isSelected()));
+		debugMenu.add(placeStoneItem);
 	}
 	
 }

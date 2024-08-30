@@ -3,8 +3,8 @@ package model;
 public class MuehleLogik {
 	
     private Spielbrett spielbrett;
-    private final Spieler spieler1;
-	private final Spieler spieler2;
+    private final Spieler spielerWeiss;
+	private final Spieler spielerSchwarz;
     private boolean isPlayerOneTurn;  // Bestimmt, welcher Spieler am Zug ist
     private int gesetzteSteine;
     
@@ -17,16 +17,16 @@ public class MuehleLogik {
 	public MuehleLogik() {
         // Initialisiere das Spielbrett und die Spieler
         this.spielbrett = Spielbrett.initialisiereBrett();
-        this.spieler1 = new Spieler("Spieler Weiﬂ", Spieler.Farbe.WEISS, 0);
-        this.spieler2 = new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 0);
+        this.spielerWeiss = new Spieler("Spieler Weiﬂ", Spieler.Farbe.WEISS, 0);
+        this.spielerSchwarz = new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 0);
         this.isPlayerOneTurn = true;  // Spieler 1 beginnt
         this.gesetzteSteine = 0;
     }
 
 	public void neuesSpiel() {
 		spielbrett = Spielbrett.initialisiereBrett();
-		spieler1.setSteine(0);
-		spieler2.setSteine(0);
+		spielerWeiss.setSteine(0);
+		spielerSchwarz.setSteine(0);
 		gesetzteSteine = 0;
 		isPlayerOneTurn = true;
 		removeStoneStatus = false;
@@ -163,7 +163,7 @@ public class MuehleLogik {
 
 
     public Spieler getCurrentPlayer() {
-        return isPlayerOneTurn ? spieler1 : spieler2;
+        return isPlayerOneTurn ? spielerWeiss : spielerSchwarz;
     }
 
     private void updateBoard() {
@@ -174,17 +174,17 @@ public class MuehleLogik {
 
     private void updateGameOver() {
     	gameOver =  !isSetPhase() 
-    		&& (spieler1.getSteine() < 3 
-				|| spieler2.getSteine() < 3 
-				|| !hasValidMoves(spieler1)
-				|| !hasValidMoves(spieler2));
+    		&& (spielerWeiss.getSteine() < 3 
+				|| spielerSchwarz.getSteine() < 3 
+				|| !hasValidMoves(spielerWeiss)
+				|| !hasValidMoves(spielerSchwarz));
     }
 
     public Spieler getWinner() {
-        if (spieler1.getSteine() < 3 || !hasValidMoves(spieler1)) {
-            return spieler2;
+        if (spielerWeiss.getSteine() < 3 || !hasValidMoves(spielerWeiss)) {
+            return spielerSchwarz;
         } else {
-            return spieler1;
+            return spielerWeiss;
         }
     }
 
@@ -244,10 +244,10 @@ public class MuehleLogik {
     }
     
     public Spieler getOtherPlayer() {
-    	if(this.getCurrentPlayer() == spieler1) {
-    		return spieler2;
+    	if(this.getCurrentPlayer() == spielerWeiss) {
+    		return spielerSchwarz;
     	}
-    	return spieler1;
+    	return spielerWeiss;
     }
     
     public void debugChangePlayer() {
@@ -260,5 +260,36 @@ public class MuehleLogik {
     		gesetzteSteine = 18;
     		updateBoard();
     	}
+    }
+    
+    public void debugPlaceStone(Feld.Inhalt inhalt, int x, int y) {
+    	switch(spielbrett.getFelder()[y][x].getInhalt()) {
+    	case verboten:
+    		return;
+    	case leer:
+    		if(inhalt == Feld.Inhalt.weiss) {
+    			spielerWeiss.setSteine(spielerWeiss.getSteine() + 1);
+    		} else if(inhalt == Feld.Inhalt.schwarz) {
+    			spielerSchwarz.setSteine(spielerSchwarz.getSteine() + 1);
+    		}
+    		break;
+    	case weiss:	
+    		if(inhalt != Feld.Inhalt.weiss) {
+    			spielerWeiss.setSteine(spielerWeiss.getSteine() - 1);
+    		}
+    		if(inhalt == Feld.Inhalt.schwarz) {
+    			spielerSchwarz.setSteine(spielerSchwarz.getSteine() + 1);
+    		}
+    		break;
+    	case schwarz:	
+    		if(inhalt != Feld.Inhalt.schwarz) {
+    			spielerSchwarz.setSteine(spielerSchwarz.getSteine() - 1);
+    		}
+    		if(inhalt == Feld.Inhalt.weiss) {
+    			spielerWeiss.setSteine(spielerWeiss.getSteine() + 1);
+    		}
+    	}
+    	spielbrett.getFelder()[y][x].setInhalt(inhalt);
+    	updateBoard();
     }
 }

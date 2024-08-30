@@ -2,19 +2,19 @@ package muehle.GUI;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import model.Feld;
 import model.MuehleLogik;
@@ -32,6 +32,7 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	private final int squareSize = 650;
 	private final CircleButton[][] buttons = new CircleButton[8][8];
 	private final JLabel playerLabel = new JLabel("");
+	private boolean showStoneMenu;
 		
 	public DrawBoard(MuehleLogik muehleLogik) {
 		this.muehleLogik = muehleLogik;
@@ -57,6 +58,10 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		}
 		
 		updatePlayerLabel();
+	}
+
+	public void setShowStoneMenu(boolean showStoneMenu) {
+		this.showStoneMenu = showStoneMenu;
 	}
 
 	// create squares and lines of board
@@ -307,29 +312,6 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		updatePlayerLabel();
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent mouseEvent) {
-
-		Object source = mouseEvent.getSource();
-		if (!(source instanceof CircleButton)) {
-			return;
-		}
-		CircleButton button = (CircleButton) source;
-
-		Position position = getPosition4Button(button);
-		if (position == null) {
-			return;
-		}
-		int x = position.getXAxis();
-		int y = position.getYAxis();
-		
-		try {
-			muehleLogik.handlePlayAction(x, y);
-		} catch(Exception ex) {
-			System.out.println("Fehler beim Ausführen einer Spielaktion " + ex.getMessage());
-		}
-	}
-
 	private Position getPosition4Button(CircleButton button) {
 		for (int y = 0; y < buttons.length; y++) {
 			for (int x = 0; x < buttons[y].length; x++) {
@@ -341,16 +323,63 @@ public class DrawBoard extends JPanel implements MouseListener  {
 		return null;
 	}
 
+	private void showContextMenu4Button(int clickPosX, int clickPosY, CircleButton button) {
+		Position position = getPosition4Button(button);
+		if(position != null) {
+			JPopupMenu contextMenu = new JPopupMenu();
+			JMenuItem setzeLeer = new JMenuItem("Stein entfernen");
+			setzeLeer.addActionListener(actionEvent
+				-> muehleLogik.debugPlaceStone(Feld.Inhalt.leer, position.getXAxis(), position.getYAxis()));
+			contextMenu.add(setzeLeer);
+	        JMenuItem setzeWeiss = new JMenuItem("weißen Stein setzen");
+	        setzeWeiss.addActionListener(actionEvent
+				-> muehleLogik.debugPlaceStone(Feld.Inhalt.weiss, position.getXAxis(), position.getYAxis()));
+	        contextMenu.add(setzeWeiss);
+	        JMenuItem setzeSchwarz = new JMenuItem("schwarzen Stein setzen");
+	        setzeSchwarz.addActionListener(actionEvent
+				-> muehleLogik.debugPlaceStone(Feld.Inhalt.schwarz, position.getXAxis(), position.getYAxis()));
+	        contextMenu.add(setzeSchwarz);
+	        contextMenu.show(button, clickPosX, clickPosY);			
+		}
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent mouseEvent) {
+
+		Object source = mouseEvent.getSource();
+		if (!(source instanceof CircleButton)) {
+			return;
+		}
+
+		CircleButton button = (CircleButton) source;
+		
+	    if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+			Position position = getPosition4Button(button);
+			if (position == null) {
+				return;
+			}
+			int x = position.getXAxis();
+			int y = position.getYAxis();
+			
+			try {
+				muehleLogik.handlePlayAction(x, y);
+			} catch(Exception ex) {
+				System.out.println("Fehler beim Ausführen einer Spielaktion " + ex.getMessage());
+			}
+	    }
+	    else if(SwingUtilities.isRightMouseButton(mouseEvent) && showStoneMenu) {
+	    	showContextMenu4Button(mouseEvent.getX(), mouseEvent.getY(), button);
+	    }
+
+	}
+
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -361,29 +390,5 @@ public class DrawBoard extends JPanel implements MouseListener  {
 	public void mouseExited(MouseEvent e) {
 	}
 
-	class RoundedBorder implements Border {
-
-		private int radius;
-		private Color color;
-
-		RoundedBorder(Color color, int radius) {
-			this.radius = radius;
-			this.color = color;
-
-		}
-
-		public Insets getBorderInsets(Component c) {
-			return new Insets(this.radius + 1, this.radius + 1, this.radius + 2, this.radius);
-		}
-
-		public boolean isBorderOpaque() {
-			return true;
-		}
-
-		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-			g.setColor(color);
-			g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-		}
-	}
 
 }
