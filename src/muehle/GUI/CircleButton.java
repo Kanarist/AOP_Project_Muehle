@@ -1,10 +1,12 @@
 package muehle.GUI;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 import javax.swing.JButton;
 
+//Spielstein als Button
 public class CircleButton extends JButton{
 	
 	private static final long serialVersionUID = 2303935598718482558L;
@@ -21,14 +23,16 @@ public class CircleButton extends JButton{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        //whaerend draufdruecken wird Button dunkler
         if (getModel().isArmed()) {
             g.setColor(getBackground().darker());
         } else {
             g.setColor(getBackground().brighter());
         }
         
-        int width = getSize().width - 1;
-        int height = getSize().height - 1;
+        Dimension size = getSize();
+        int width = size.width - 1;
+        int height = size.height - 1;
 
         g.fillOval(0, 0, width, height);
         
@@ -37,6 +41,7 @@ public class CircleButton extends JButton{
 
     }
     
+    //schreibt Text zentral auf Button
     private void drawCenteredText(Graphics g, String text, int width, int height) {
     	if(!text.isBlank()) {
             FontMetrics fm = g.getFontMetrics();

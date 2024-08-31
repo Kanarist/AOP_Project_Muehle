@@ -21,8 +21,8 @@ public class MuehleLogik {
 	
 	private String debugMessage;
     
+	//initialisiere das Spielbrett und die Spieler
 	public MuehleLogik() {
-        // Initialisiere das Spielbrett und die Spieler
         this.spielbrett = Spielbrett.initialisiereBrett();
         this.spielerWeiss = new Spieler("Spieler Weiß", Spieler.Farbe.WEISS, 0);
         this.spielerSchwarz = new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 0);
@@ -30,6 +30,7 @@ public class MuehleLogik {
         this.gesetzteSteine = 0;
     }
 
+	//resetted Spiel
 	public void neuesSpiel() {
 		spielbrett = Spielbrett.initialisiereBrett();
 		spielerWeiss.setSteine(0);
@@ -41,10 +42,14 @@ public class MuehleLogik {
 		updateBoard();
 	}
 	
+	//Registrierung der GUI
+	//Der updateListener wird aufgerufen, wenn sich das Model geaendert hat.
+	//Damit wird die Oberflaeche bei Aenderungen automatisch aktualisiert.
     public void setUpdateListener(Runnable updateListener) {
 		this.updateListener = updateListener;
 	}
     
+    //muss Stein entfernt werden?
 	public boolean isRemoveStoneStatus() {
 		return removeStoneStatus;
 	}
@@ -53,29 +58,33 @@ public class MuehleLogik {
 		return spielbrett.getFelder();
 	}
 	
+	//ist Stein ausgewaehlt? b
 	public boolean isSelPosition(int x, int y) {
 		Position selPosition = spielbrett.getSelPostion();
 		return selPosition != null && selPosition.getXAxis() == x && selPosition.getYAxis() == y;
 	}
     
+	//ist Spiel vorbei?
     public boolean isGameOver() {
 		return gameOver;
 	}
 
+    //verarbeitet Spieleraktionen, wird von GUI gerufen 
 	public void handlePlayAction(int x, int y) {
 		debugMessage = null;
-		
         if (gameOver) {
-            return;
+            return; //keine Reaktion wenn Spiel vorbei
         }
         
         boolean setOrMoveIsfinished = false;
 
         try {
+        	//Stein nach Muehle entfernen
             if(removeStoneStatus) {
             	handleRemoveStone(x, y);
             	setOrMoveIsfinished = true;
-            } 
+            }
+            //Stein in Setzphase setzen
             else if (isSetPhase()) {
             	doSetAction(x, y);
             	setOrMoveIsfinished = true;
@@ -83,16 +92,16 @@ public class MuehleLogik {
             	Position position = spielbrett.getSelPostion();
             	if(position != null) {
             		
-            		// Wenn gleiche Position, dann Selektion wieder aufheben
+            		// wenn gleiche Position, dann Selektion wieder aufheben
             		if(position.getXAxis() == x && position.getYAxis() == y) {
             			spielbrett.setSelPostion(null);
-            		} else {
+            		} else { //selektierten Stein bewegen 
                     	doMoveAction(position.getXAxis(), position.getYAxis(), x, y);
                 		spielbrett.setSelPostion(null);
                 		setOrMoveIsfinished = true;
             		}
             			
-            	} else {
+            	} else { //wenn Stein Spieler gehört, Stein zum ziehen selektieren
     				if(spielbrett.getFelder()[y][x].gehoertSpieler(getCurrentPlayer())) {
     	        		spielbrett.setSelPostion(new Position(x,y));
     					debugMessage = "Stein ausgewählt bei Position: (" + x + ", " + y + ")";
@@ -102,7 +111,7 @@ public class MuehleLogik {
             	}
             }
 
-            if(setOrMoveIsfinished) {
+            if(setOrMoveIsfinished) { //auf Spielende oder Muehle pruefen
             	updateGameOver();
                 if (gameOver) {
                 	debugMessage = "Spiel vorbei! " + getWinner().getName() + " hat gewonnen!";
@@ -120,18 +129,20 @@ public class MuehleLogik {
         updateBoard();
     }
 
+	//gibt Debugmessage wieder
 	public String getDebugMessage() {
 		return debugMessage;
 	}
 
-	
-    private void handleRemoveStone(int x, int y) throws BesetztesFeldException, FalscheFarbeExeption, UnremovebleExeption {
+    //entfernt Stein nach Muehle
+	private void handleRemoveStone(int x, int y) throws BesetztesFeldException, FalscheFarbeExeption, UnremovebleExeption {
     	if(removeStoneStatus) {
         	entferneStein(x, y);
             removeStoneStatus = false;
     	}
     }
     
+    //entfernt Stein bei passender Feldfarbe vom Gegner
     public void entferneStein(int x, int y) throws BesetztesFeldException, 
 	FalscheFarbeExeption,UnremovebleExeption {
 		if (spielbrett.istFeldFrei(x,y)) {
@@ -140,6 +151,7 @@ public class MuehleLogik {
 		if(!getFelder()[y][x].gehoertSpieler(getOtherPlayer())) {
 			throw new FalscheFarbeExeption(); 
 		}
+		//darf nicht entfernt werden wenn in Muehle ausser wenn alle gegnerischen Steine Teil von Muehle
 		if(spielbrett.istTeilVonMuehle(x, y)
 				&& spielbrett.freieSteineVorhanden(getFelder()[y][x].getInhalt())) {
 			throw new UnremovebleExeption();
@@ -149,11 +161,12 @@ public class MuehleLogik {
 
 	}
     
-
+    //ueberprueft ob genug Steine in Setzphase gesetzt wurden
     public boolean isSetPhase() {
     	return gesetzteSteine < 18;
     }
 
+    //Platzierphase von ziehendem Spieler ausgeführt
     private void doSetAction(int x, int y) throws LogikException {
         // Setzphase
         SpielPhasen.SetPhase setPhase = new SpielPhasen.SetPhase();
@@ -162,6 +175,7 @@ public class MuehleLogik {
         gesetzteSteine++;
     }
 
+    //Zugphase von ziehendem Spieler ausgeführt
     private void doMoveAction(int fromX, int fromY, int toX, int toY) throws LogikException {
         // Zugphase
         SpielPhasen.MovePhase movePhase = new SpielPhasen.MovePhase();
@@ -171,16 +185,19 @@ public class MuehleLogik {
 
 
 
+    //gibt Spieler der am Zug ist wieder
     public Spieler getCurrentPlayer() {
         return isPlayerOneTurn ? spielerWeiss : spielerSchwarz;
     }
 
+    //GUI wird ueber Modelaenderung informiert
     private void updateBoard() {
     	if(updateListener != null) {
     		updateListener.run();
     	}
     }
 
+    // ueberprueft, ob Siegesbedingungen erfüllt
     private void updateGameOver() {
     	gameOver =  !isSetPhase() 
     		&& (spielerWeiss.getSteine() < 3 
@@ -189,6 +206,7 @@ public class MuehleLogik {
 				|| !hasValidMoves(spielerSchwarz));
     }
 
+    // gibt Gewinner zurueck
     public Spieler getWinner() {
         if (spielerWeiss.getSteine() < 3 || !hasValidMoves(spielerWeiss)) {
             return spielerSchwarz;
@@ -197,8 +215,8 @@ public class MuehleLogik {
         }
     }
 
+    // ueberprueft, ob Spieler gueltige Zuege hat
     private boolean hasValidMoves(Spieler spieler) {
-        // Überprüfe, ob der Spieler noch gültige Züge hat
     	if(spieler.getSteine() == 3) {
     		// mit 3 Steinen kann er springen
     		return true;
@@ -207,7 +225,7 @@ public class MuehleLogik {
         for (int y = 0; y < felder.length; y++) {
             for (int x = 0; x < felder[y].length; x++) {
                 if (felder[y][x].getInhalt() == Feld.farbeFeld(spieler)) {
-                    // Überprüfe mögliche Züge für diesen Stein
+                    // ueberprüft mögliche Züge für diesen Stein
                     if (canMove(x, y)) {
                         return true;
                     }
@@ -217,10 +235,10 @@ public class MuehleLogik {
         return false;
     }
 
+    // ueberprueft, ob Stein bewegt werden kann
     private boolean canMove(int x, int y) {
-        // Überprüfe, ob ein Stein an Position (x, y) bewegt werden kann
         Feld[][] felder = spielbrett.getFelder();
-        // Beispiele für mögliche Bewegungen prüfen
+        // ueberprueft in alle Richtungen ob leeres Feld vorhanden
         int z = x + 1;
 		while(z < felder.length && felder[y][z].getInhalt() == Feld.Inhalt.verboten) {
 			z++;
@@ -252,6 +270,7 @@ public class MuehleLogik {
         return false;
     }
     
+    //gibt Spieler wieder der nicht am Zug ist
     public Spieler getOtherPlayer() {
     	if(this.getCurrentPlayer() == spielerWeiss) {
     		return spielerSchwarz;
@@ -259,12 +278,14 @@ public class MuehleLogik {
     	return spielerWeiss;
     }
     
+    //Debug: wechselt Spieler der am Zug ist
     public void debugChangePlayer() {
     	debugMessage = null;
     	isPlayerOneTurn = !isPlayerOneTurn;
     	updateBoard();
     }
 
+    //Debug: überspringt Setzphase
     public void debugForceMovePhase() {
     	debugMessage = null;
     	if(gesetzteSteine < 18) {
@@ -273,6 +294,7 @@ public class MuehleLogik {
     	}
     }
     
+    //Debug: aendert Feldfarbe und passt Steinanzahl der Spieler entsprechend an
     public void debugPlaceStone(Feld.Inhalt inhalt, int x, int y) {
     	debugMessage = null;
     	switch(spielbrett.getFelder()[y][x].getInhalt()) {

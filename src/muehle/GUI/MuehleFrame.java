@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 
 import model.MuehleLogik;
 
+//Hauptfenster
 public class MuehleFrame extends JFrame{
 	
 	private static final long serialVersionUID = 4368963525542508317L;
@@ -23,6 +24,7 @@ public class MuehleFrame extends JFrame{
 		setResizable(true);
 		setMinimumSize(new Dimension(900, 900));
 		
+		//Registrierung Spielbrettoberflaeche in Logik fuer Aktualisierungen
 		muehleLogik.setUpdateListener(() -> drawBoard.updateBoard());
 		
 		add(drawBoard);
@@ -33,6 +35,7 @@ public class MuehleFrame extends JFrame{
 	}
 	
 
+	//Spielmenues
 	private void initMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -55,7 +58,7 @@ public class MuehleFrame extends JFrame{
 		menuBar.add(debugMenu);
 		
 		JCheckBoxMenuItem positionItem = new JCheckBoxMenuItem("Position anzeigen");		
-		positionItem.addActionListener(actionEvent -> drawBoard.showPostions(positionItem.isSelected()));
+		positionItem.addActionListener(actionEvent -> drawBoard.showGameCoordinates(positionItem.isSelected()));
 		debugMenu.add(positionItem);
 		
 		JMenuItem changePlayerItem = new JMenuItem("Wechsel Spieler");

@@ -30,6 +30,7 @@ public class Spielbrett {
 		this.selPostion = selPostion;
 	}
 
+	//initialisiert ein leeres Spielbrett
 	public static Spielbrett initialisiereBrett() {
 		Feld[][] felder = new Feld[8][8];
 		Feld.Inhalt[][] inhalt = {
@@ -61,6 +62,7 @@ public class Spielbrett {
 		return spielbrett;
 	}
 	
+	//ueberprueft ob Feld leer ist
 	public boolean istFeldFrei(int x, int y) {
 		if (this.felder[y][x].getInhalt() == Feld.Inhalt.leer) {
 			return true;
@@ -73,6 +75,8 @@ public class Spielbrett {
 		}
 	}
 	
+	//ueberprueft ob zwei Felder angrenzend sind, intdem in alle Richtungen geguckt wird, ob das neachste
+	//nicht verbotene Feld das zweite Feld ist 
 	public boolean istBenachbart(int x1, int y1, int x2, int y2) {
 		if (y1 == y2) {
 			int z = x1 + 1;
@@ -109,7 +113,9 @@ public class Spielbrett {
 		return false;
 	}
 	
+	//ueberprueft ob Feld Teil einer Muehle ist
 	public boolean istTeilVonMuehle(int x, int y) {
+		//zaehlt Anzahl weisse und schwarze Felder in x und y Richtung
 		int w = 0;
 		int s = 0;
 		for (int i = 0; i < felder.length; i++) {
@@ -138,16 +144,8 @@ public class Spielbrett {
 		}
 		return false;		
 	}
-	
-	public void BrettAusgeben() {
-		for (int y = 0; y < felder.length; y++) {
-            for (int x = 0; x < felder[y].length; x++) {
-                System.out.printf("%-10s", this.getFelder()[y][x].getInhalt());
-            }
-            System.out.println();
-        }
-	}
-	
+
+	//ueberprueft ob Steine einer Feldfarbe existieren, die nicht Teil einer Muehle sind
 	public boolean freieSteineVorhanden(Inhalt inhalt) {
 		for (int y = 0; y < felder.length; y++) {
             for (int x = 0; x < felder[y].length; x++) {

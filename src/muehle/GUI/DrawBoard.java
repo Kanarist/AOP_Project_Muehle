@@ -21,15 +21,22 @@ import model.MuehleLogik;
 import model.Position;
 import model.Spieler.Farbe;
 
+//Darstellung Spielfeld
 public class DrawBoard extends JPanel implements MouseListener {
 
 	private static final long serialVersionUID = -4262598812591836725L;
 
+	//Spiellogik
 	private final MuehleLogik muehleLogik;
+	//Spielfeldgroesse
 	private final int squareSize = 650;
+	//Buttons als Spielsteine fuer jede moegliche Position
 	private final CircleButton[][] buttons = new CircleButton[8][8];
+	//Ausgabe Spielanweisung
 	private final JLabel playerLabel = new JLabel("");
+	//Ausgabe Debugmessages
 	private final JLabel debugMessageLabel = new JLabel("");
+	//Soll Kontextdebugmenue angeboten werden?
 	private boolean showStoneMenu;
 
 	public DrawBoard(MuehleLogik muehleLogik) {
@@ -46,6 +53,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 		debugMessageLabel.setVisible(false);
 		add(debugMessageLabel);
 
+		//Anlage und Initialisierung der Spielsteinbutton
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if (muehleLogik.getFelder()[i][j].getInhalt() != Feld.Inhalt.verboten) {
@@ -63,15 +71,17 @@ public class DrawBoard extends JPanel implements MouseListener {
 		updatePlayerLabel();
 	}
 
+	//Verfuegbarkeit Steinkontextmenue
 	public void setShowStoneMenu(boolean showStoneMenu) {
 		this.showStoneMenu = showStoneMenu;
 	}
 	
+	//Verfuegbarkeit Debugmessages
 	public void setShowDebugMessage(boolean showDebugMessage) {
 		debugMessageLabel.setVisible(showDebugMessage);
 	}
 
-	// create squares and lines of board
+	//Zeichnet Linien des Spielfelds
 	public void createSquaresAndLines(Graphics g) {
 		Graphics2D lineAndSquare = (Graphics2D) g;
 
@@ -87,27 +97,27 @@ public class DrawBoard extends JPanel implements MouseListener {
 			lineAndSquare.setColor(Color.BLACK);
 			lineAndSquare.drawRect(x, y, newSquareSize, newSquareSize);
 
-			// draw lines
+			//malt Linien
 			if (i == 0) {
 
-				// vertical lines
-				lineAndSquare.drawLine(panelWidth / 2, y, panelWidth / 2, (panelHeight - squareSize + 2 * 200) / 2); // top
+				//vertikale Linien
+				lineAndSquare.drawLine(panelWidth / 2, y, panelWidth / 2, (panelHeight - squareSize + 2 * 200) / 2); // oben
 				lineAndSquare.drawLine(panelWidth / 2, (panelHeight + newSquareSize) / 2, panelWidth / 2,
 						((panelHeight + panelHeight - squareSize + 2 * 200) / 2)
-								- (panelHeight - squareSize + 2 * 200) / 2 + 125); // bottom
+								- (panelHeight - squareSize + 2 * 200) / 2 + 125); // unten
 
-				// horizontal lines
-				lineAndSquare.drawLine(x, panelHeight / 2, (panelWidth - squareSize + 2 * 200) / 2, panelHeight / 2); // left
+				//horizontale Linien
+				lineAndSquare.drawLine(x, panelHeight / 2, (panelWidth - squareSize + 2 * 200) / 2, panelHeight / 2); // links
 				lineAndSquare.drawLine((panelWidth + newSquareSize) / 2, panelHeight / 2,
 						(panelWidth + panelWidth - squareSize + 2 * 200) / 2 - (panelWidth - squareSize + 2 * 200) / 2
 								+ 125,
-						panelHeight / 2); // reight
+						panelHeight / 2); // rechts
 
 			}
 		}
 	}
 
-	// create of circles
+	//setzt Positionen der Buttons und der Labels 
 	private void paintFields() {
 
 		int var = 200;
@@ -253,7 +263,8 @@ public class DrawBoard extends JPanel implements MouseListener {
 		debugMessageLabel.setBounds(10, panelHeight - 40, panelWidth - 20, 30);
 	}
 
-	public void showPostions(boolean show) {
+	//Darstellung zugehoerigen Koordinates in Matrix an- und ausschalten
+	public void showGameCoordinates(boolean show) {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				CircleButton button = buttons[i][j];
@@ -264,12 +275,14 @@ public class DrawBoard extends JPanel implements MouseListener {
 		}
 	}
 
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		createSquaresAndLines(g);
 		paintFields();
 	}
 
+	//Ausgabe der Spielanweisung
 	private void updatePlayerLabel() {
 
 		String text;
@@ -292,6 +305,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 		playerLabel.setText(text);
 	}
 
+	//Aktualisieren das Spielstands auf dem Brett
 	public void updateBoard() {
 		final Feld[][] felder = muehleLogik.getFelder();
 		EventQueue.invokeLater(() -> {
@@ -319,12 +333,12 @@ public class DrawBoard extends JPanel implements MouseListener {
 		});
 		updatePlayerLabel();
 		
-		
 		String debugMessage = muehleLogik.getDebugMessage();
 		debugMessageLabel.setText(debugMessage != null ? debugMessage : "");
 	}
 
-	private Position getPosition4Button(CircleButton button) {
+	//ermittelt Spielkoordinaten eines Buttons
+	private Position getPositionForButton(CircleButton button) {
 		for (int y = 0; y < buttons.length; y++) {
 			for (int x = 0; x < buttons[y].length; x++) {
 				if (buttons[y][x] == button) {
@@ -335,8 +349,9 @@ public class DrawBoard extends JPanel implements MouseListener {
 		return null;
 	}
 
-	private void showContextMenu4Button(int clickPosX, int clickPosY, CircleButton button) {
-		Position position = getPosition4Button(button);
+	//erzeugt Kontextmenue fuer Spielbutton
+	private void showContextMenuForButton(int clickPosX, int clickPosY, CircleButton button) {
+		Position position = getPositionForButton(button);
 		if (position != null) {
 			JPopupMenu contextMenu = new JPopupMenu();
 			JMenuItem setzeLeer = new JMenuItem("Stein entfernen");
@@ -365,15 +380,17 @@ public class DrawBoard extends JPanel implements MouseListener {
 
 		CircleButton button = (CircleButton) source;
 
+		//linke Maustaste Spielaktion
 		if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-			Position position = getPosition4Button(button);
+			Position position = getPositionForButton(button);
 			if (position == null) {
 				return;
 			}
 			muehleLogik.handlePlayAction(position.getXAxis(), position.getYAxis());
 
+		//rechte Maustaste Kontextmenue
 		} else if (SwingUtilities.isRightMouseButton(mouseEvent) && showStoneMenu) {
-			showContextMenu4Button(mouseEvent.getX(), mouseEvent.getY(), button);
+			showContextMenuForButton(mouseEvent.getX(), mouseEvent.getY(), button);
 		}
 
 	}
