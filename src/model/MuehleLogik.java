@@ -1,9 +1,9 @@
 package model;
 
 import model.exception.BesetztesFeldException;
-import model.exception.FalscheFarbeExeption;
+import model.exception.FalscheFarbeException;
 import model.exception.LogikException;
-import model.exception.UnremovebleExeption;
+import model.exception.UnremovebleExecption;
 
 public class MuehleLogik {
 	
@@ -135,7 +135,7 @@ public class MuehleLogik {
 	}
 
     //entfernt Stein nach Muehle
-	private void handleRemoveStone(int x, int y) throws BesetztesFeldException, FalscheFarbeExeption, UnremovebleExeption {
+	private void handleRemoveStone(int x, int y) throws BesetztesFeldException, FalscheFarbeException, UnremovebleExecption {
     	if(removeStoneStatus) {
         	entferneStein(x, y);
             removeStoneStatus = false;
@@ -144,17 +144,17 @@ public class MuehleLogik {
     
     //entfernt Stein bei passender Feldfarbe vom Gegner
     public void entferneStein(int x, int y) throws BesetztesFeldException, 
-	FalscheFarbeExeption,UnremovebleExeption {
+	FalscheFarbeException,UnremovebleExecption {
 		if (spielbrett.istFeldFrei(x,y)) {
 			throw new BesetztesFeldException();
 		}
 		if(!getFelder()[y][x].gehoertSpieler(getOtherPlayer())) {
-			throw new FalscheFarbeExeption(); 
+			throw new FalscheFarbeException(); 
 		}
 		//darf nicht entfernt werden wenn in Muehle ausser wenn alle gegnerischen Steine Teil von Muehle
 		if(spielbrett.istTeilVonMuehle(x, y)
 				&& spielbrett.freieSteineVorhanden(getFelder()[y][x].getInhalt())) {
-			throw new UnremovebleExeption();
+			throw new UnremovebleExecption();
 		}
 		getFelder()[y][x].setInhalt(Feld.Inhalt.leer);
 		getOtherPlayer().setSteine(getOtherPlayer().getSteine()-1);

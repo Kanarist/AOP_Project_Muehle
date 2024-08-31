@@ -1,9 +1,9 @@
 package model.exception;
 
-public class UnremovebleExeption  extends Exception{
+public class UnremovebleExecption  extends LogikException {
 	private static final long serialVersionUID = 5643705229050554125L;
 
-	public UnremovebleExeption(){
+	public UnremovebleExecption(){
         super("Der Stein darf nicht entfernt werden.");
     }
 }

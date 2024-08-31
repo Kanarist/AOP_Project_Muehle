@@ -1,9 +1,9 @@
 package model;
 
 import model.exception.BesetztesFeldException;
-import model.exception.FalscheFarbeExeption;
+import model.exception.FalscheFarbeException;
 import model.exception.LogikException;
-import model.exception.NichtBenachbartExeption;
+import model.exception.NichtBenachbartExecption;
 
 public class SpielPhasen {
 
@@ -38,10 +38,10 @@ public class SpielPhasen {
                 throw new BesetztesFeldException();
             }
             if (player.getSteine() > 3 && !spielbrett.istBenachbart(fromX, fromY, toX, toY)) {
-                throw new NichtBenachbartExeption();
+                throw new NichtBenachbartExecption();
             }
             if (spielbrett.getFelder()[fromY][fromX].getInhalt() != Feld.farbeFeld(player)) {
-                throw new FalscheFarbeExeption();
+                throw new FalscheFarbeException();
             }
             //setzt altes Feld leer und neues Feld zur Spielerfarbe 
             spielbrett.getFelder()[toY][toX].setInhalt(spielbrett.getFelder()[fromY][fromX].getInhalt());

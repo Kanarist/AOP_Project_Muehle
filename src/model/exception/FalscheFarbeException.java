@@ -1,9 +1,9 @@
 package model.exception;
 
 @SuppressWarnings("serial")
-public class FalscheFarbeExeption extends LogikException {
+public class FalscheFarbeException extends LogikException {
 	
-	public FalscheFarbeExeption() {
+	public FalscheFarbeException() {
         super("Der Stein besitzt die falsche Farbe.");
     }
 

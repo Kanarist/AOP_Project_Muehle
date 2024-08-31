@@ -1,9 +1,9 @@
 package model.exception;
 
 @SuppressWarnings("serial")
-public class NichtBenachbartExeption extends LogikException {
+public class NichtBenachbartExecption extends LogikException {
 
-	public NichtBenachbartExeption() {
+	public NichtBenachbartExecption() {
         super("Die Felder sind keine Nachbarn.");
     }
 

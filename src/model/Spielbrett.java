@@ -1,7 +1,7 @@
 package model;
 
 import model.Feld.Inhalt;
-import model.exception.VerbotenesFeldExeption;
+import model.exception.VerbotenesFeldException;
 
 public class Spielbrett {
 
@@ -68,7 +68,7 @@ public class Spielbrett {
 			return true;
 		}
 		else if (this.felder[y][x].getInhalt() == Feld.Inhalt.verboten) {
-			throw new VerbotenesFeldExeption();
+			throw new VerbotenesFeldException();
 		}
 		else {
 			return false;
