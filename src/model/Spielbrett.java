@@ -34,7 +34,7 @@ public class Spielbrett {
 	public static Spielbrett initialisiereBrett() {
 		Feld[][] felder = new Feld[8][8];
 		Feld.Inhalt[][] inhalt = {
-				// Definiere den Inhalt für jedes Feld
+				// Definiere den Inhalt fuer jedes Feld
 	            {Feld.Inhalt.leer, Feld.Inhalt.verboten, Feld.Inhalt.verboten, Feld.Inhalt.leer,
 	            Feld.Inhalt.verboten, Feld.Inhalt.verboten, Feld.Inhalt.verboten, Feld.Inhalt.leer},
 	            {Feld.Inhalt.verboten, Feld.Inhalt.leer, Feld.Inhalt.verboten, Feld.Inhalt.leer,
@@ -52,7 +52,7 @@ public class Spielbrett {
 	            {Feld.Inhalt.leer, Feld.Inhalt.verboten, Feld.Inhalt.verboten, Feld.Inhalt.verboten,
 	            Feld.Inhalt.leer, Feld.Inhalt.verboten, Feld.Inhalt.verboten, Feld.Inhalt.leer}
 	        };
-        // Setze Inhalt für jedes Feld
+        // Setze Inhalt fuer jedes Feld
         for (int i = 0; i < felder.length; i++) {
             for (int j = 0; j < felder[i].length; j++) {
             	felder[i][j] = new Feld(inhalt[i][j]);

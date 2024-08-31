@@ -19,7 +19,7 @@ public class MuehleFrame extends JFrame{
 	
 	
 	public MuehleFrame() {
-		setTitle("Mühle");
+		setTitle("MÃ¼hle");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setResizable(true);
 		setMinimumSize(new Dimension(900, 900));
@@ -65,11 +65,11 @@ public class MuehleFrame extends JFrame{
 		changePlayerItem.addActionListener(actionEvent -> muehleLogik.debugChangePlayer());
 		debugMenu.add(changePlayerItem);
 		
-		JMenuItem forceMovePhase = new JMenuItem("Setzphase überspringen");
+		JMenuItem forceMovePhase = new JMenuItem("Setzphase Ã¼berspringen");
 		forceMovePhase.addActionListener(actionEvent -> muehleLogik.debugForceMovePhase());
 		debugMenu.add(forceMovePhase);
 		
-		JCheckBoxMenuItem placeStoneItem = new JCheckBoxMenuItem("Kontextmenü Steine");
+		JCheckBoxMenuItem placeStoneItem = new JCheckBoxMenuItem("KontextmenÃ¼ Steine");
 		placeStoneItem.addActionListener(actionEvent -> drawBoard.setShowStoneMenu(placeStoneItem.isSelected()));
 		debugMenu.add(placeStoneItem);
 		

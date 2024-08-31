@@ -24,7 +24,7 @@ public class MuehleLogik {
 	//initialisiere das Spielbrett und die Spieler
 	public MuehleLogik() {
         this.spielbrett = Spielbrett.initialisiereBrett();
-        this.spielerWeiss = new Spieler("Spieler Weiﬂ", Spieler.Farbe.WEISS, 0);
+        this.spielerWeiss = new Spieler("Spieler Wei√ü", Spieler.Farbe.WEISS, 0);
         this.spielerSchwarz = new Spieler("Spieler Schwarz", Spieler.Farbe.SCHWARZ, 0);
         this.isPlayerOneTurn = true;  // Spieler 1 beginnt
         this.gesetzteSteine = 0;
@@ -101,12 +101,12 @@ public class MuehleLogik {
                 		setOrMoveIsfinished = true;
             		}
             			
-            	} else { //wenn Stein Spieler gehˆrt, Stein zum ziehen selektieren
+            	} else { //wenn Stein Spieler geh√∂rt, Stein zum ziehen selektieren
     				if(spielbrett.getFelder()[y][x].gehoertSpieler(getCurrentPlayer())) {
     	        		spielbrett.setSelPostion(new Position(x,y));
-    					debugMessage = "Stein ausgew‰hlt bei Position: (" + x + ", " + y + ")";
+    					debugMessage = "Stein ausgew√§hlt bei Position: (" + x + ", " + y + ")";
     				} else {
-    					debugMessage = "Kein g¸ltiger Stein zum Ausw‰hlen!(" + x + ", " + y + ")";
+    					debugMessage = "Kein g√ºltiger Stein zum Ausw√§hlen!(" + x + ", " + y + ")";
     				}
             	}
             }
@@ -166,7 +166,7 @@ public class MuehleLogik {
     	return gesetzteSteine < 18;
     }
 
-    //Platzierphase von ziehendem Spieler ausgef¸hrt
+    //Platzierphase von ziehendem Spieler ausgefuehrt
     private void doSetAction(int x, int y) throws LogikException {
         // Setzphase
         SpielPhasen.SetPhase setPhase = new SpielPhasen.SetPhase();
@@ -175,7 +175,7 @@ public class MuehleLogik {
         gesetzteSteine++;
     }
 
-    //Zugphase von ziehendem Spieler ausgef¸hrt
+    //Zugphase von ziehendem Spieler ausgefuehrt
     private void doMoveAction(int fromX, int fromY, int toX, int toY) throws LogikException {
         // Zugphase
         SpielPhasen.MovePhase movePhase = new SpielPhasen.MovePhase();
@@ -197,7 +197,7 @@ public class MuehleLogik {
     	}
     }
 
-    // ueberprueft, ob Siegesbedingungen erf¸llt
+    // ueberprueft, ob Siegesbedingungen erfuellt
     private void updateGameOver() {
     	gameOver =  !isSetPhase() 
     		&& (spielerWeiss.getSteine() < 3 
@@ -225,7 +225,7 @@ public class MuehleLogik {
         for (int y = 0; y < felder.length; y++) {
             for (int x = 0; x < felder[y].length; x++) {
                 if (felder[y][x].getInhalt() == Feld.farbeFeld(spieler)) {
-                    // ueberpr¸ft mˆgliche Z¸ge f¸r diesen Stein
+                    // ueberpr√ºft m√∂gliche Z√ºge f√ºr diesen Stein
                     if (canMove(x, y)) {
                         return true;
                     }
@@ -285,7 +285,7 @@ public class MuehleLogik {
     	updateBoard();
     }
 
-    //Debug: ¸berspringt Setzphase
+    //Debug: √ºberspringt Setzphase
     public void debugForceMovePhase() {
     	debugMessage = null;
     	if(gesetzteSteine < 18) {

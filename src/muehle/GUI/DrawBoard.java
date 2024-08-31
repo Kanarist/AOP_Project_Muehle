@@ -291,10 +291,10 @@ public class DrawBoard extends JPanel implements MouseListener {
 			text = "Spiel vorbei! " + muehleLogik.getWinner().getName() + " hat gewonnen!";
 		} else {
 			text = String.format("Spieler %s ist dran: ",
-					muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ ? "Schwarz" : "Weiß");
+					muehleLogik.getCurrentPlayer().getFarbe() == Farbe.SCHWARZ ? "Schwarz" : "WeiÃŸ");
 
 			if (muehleLogik.isRemoveStoneStatus()) {
-				text += "!!! M Ü H L E !!! Nimm einen Stein vom Gegner!";
+				text += "!!! M Ãœ H L E !!! Nimm einen Stein vom Gegner!";
 			} else if (muehleLogik.isSetPhase()) {
 				text += "Setze einen Stein!";
 			} else {
@@ -358,7 +358,7 @@ public class DrawBoard extends JPanel implements MouseListener {
 			setzeLeer.addActionListener(actionEvent -> muehleLogik.debugPlaceStone(Feld.Inhalt.leer,
 					position.getXAxis(), position.getYAxis()));
 			contextMenu.add(setzeLeer);
-			JMenuItem setzeWeiss = new JMenuItem("weißen Stein setzen");
+			JMenuItem setzeWeiss = new JMenuItem("weiÃŸen Stein setzen");
 			setzeWeiss.addActionListener(actionEvent -> muehleLogik.debugPlaceStone(Feld.Inhalt.weiss,
 					position.getXAxis(), position.getYAxis()));
 			contextMenu.add(setzeWeiss);
